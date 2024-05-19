@@ -1,32 +1,38 @@
-# exclude all
-/*
-
-# include important folders
-# need gradle
-!gradle/
-!bintray/
-!gradlew
+.gradle
+.settings
+/.idea/
+/.vscode/
+/run/
+/build/
+/eclipse/
+.classpath
+.project
+/bin/
+/config/
+/crash-reports/
+/logs/
+options.txt
+/saves/
+usernamecache.json
+banned-ips.json
+banned-players.json
+eula.txt
+ops.json
+server.properties
+servers.dat
+usercache.json
+whitelist.json
+/out/
+*.iml
+*.ipr
+*.iws
+src/main/resources/mixins.*([!.]).json
+*.bat
+*.DS_Store
 !gradlew.bat
-!build.gradle
-!build.properties
-!gradle.properties
-!.github/
-
-# include markdowns
-!README.md
-!LICENSE
-!COPYING.txt
-
-# include sourcecode
-!src/
-src/generated/resources/.cache
-
-# include git important files
-!.gitmodules
-!.gitignore
-
-# code format to reduce noise in git commits
-!codeformat/
-
-# include web files
-!web/
+.factorypath
+addon.local.gradle
+addon.local.gradle.kts
+addon.late.local.gradle
+addon.late.local.gradle.kts
+layout.json
