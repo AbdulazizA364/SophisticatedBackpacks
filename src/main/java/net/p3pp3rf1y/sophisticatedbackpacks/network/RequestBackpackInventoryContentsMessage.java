@@ -2,7 +2,7 @@ package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
@@ -42,11 +42,11 @@ public class RequestBackpackInventoryContentsMessage {
 		CompoundNBT backpackContents = BackpackStorage.get().getOrCreateBackpackContents(msg.backpackUuid);
 
 		CompoundNBT inventoryContents = new CompoundNBT();
-		INBT inventoryNbt = backpackContents.get(BackpackInventoryHandler.INVENTORY_TAG);
+		NBTBase inventoryNbt = backpackContents.get(BackpackInventoryHandler.INVENTORY_TAG);
 		if (inventoryNbt != null) {
 			inventoryContents.put(BackpackInventoryHandler.INVENTORY_TAG, inventoryNbt);
 		}
-		INBT upgradeNbt = backpackContents.get(BackpackUpgradeHandler.UPGRADE_INVENTORY_TAG);
+		NBTBase upgradeNbt = backpackContents.get(BackpackUpgradeHandler.UPGRADE_INVENTORY_TAG);
 		if (upgradeNbt != null) {
 			inventoryContents.put(BackpackUpgradeHandler.UPGRADE_INVENTORY_TAG, upgradeNbt);
 		}

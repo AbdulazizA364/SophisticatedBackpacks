@@ -2,10 +2,11 @@ package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.toolswapper;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.inventory.container.Slot;
+//import net.minecraft.inventory.container.PlayerContainer;
+//import net.minecraft.inventory.container.Slot;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ToolType;
+//import net.minecraftforge.common.ToolType;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.registry.tool.ToolRegistry;
 import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.FilterLogicContainerBase;

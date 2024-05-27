@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.crafting;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.ShapedRecipe;
@@ -23,13 +23,13 @@ public class UpgradeNextTierRecipe extends ShapedRecipe implements IWrapperRecip
 	}
 
 	@Override
-	public ItemStack assemble(CraftingInventory inv) {
+	public ItemStack assemble(InventoryCrafting inv) {
 		ItemStack nextTier = super.assemble(inv);
 		getUpgrade(inv).ifPresent(upgrade -> nextTier.setTag(upgrade.getTag()));
 		return nextTier;
 	}
 
-	private Optional<ItemStack> getUpgrade(CraftingInventory inv) {
+	private Optional<ItemStack> getUpgrade(InventoryCrafting inv) {
 		for (int slot = 0; slot < inv.getContainerSize(); slot++) {
 			ItemStack slotStack = inv.getItem(slot);
 			if (slotStack.getItem() instanceof IBackpackUpgradeItem) {

@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.util;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.entity.player.EntityPlayer;
+//import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 
@@ -22,12 +22,12 @@ public class PlayerInventoryProvider {
 	private final List<String> renderedHandlers = new ArrayList<>();
 
 	public PlayerInventoryProvider() {
-		addPlayerInventoryHandler(MAIN_INVENTORY, gameTime -> PlayerInventoryHandler.SINGLE_IDENTIFIER, (player, identifier) -> player.inventory.items.size(),
-				(player, identifier, slot) -> player.inventory.items.get(slot), true, false, false);
-		addPlayerInventoryHandler(OFFHAND_INVENTORY, gameTime -> PlayerInventoryHandler.SINGLE_IDENTIFIER, (player, identifier) -> player.inventory.offhand.size(),
-				(player, identifier, slot) -> player.inventory.offhand.get(slot), false, false, false);
+		addPlayerInventoryHandler(MAIN_INVENTORY, gameTime -> PlayerInventoryHandler.SINGLE_IDENTIFIER, (player, identifier) -> player.inventory.getSizeInventory(),
+				(player, identifier, slot) -> player.inventory.getStackInSlot(slot), true, false, false);
+//		addPlayerInventoryHandler(OFFHAND_INVENTORY, gameTime -> PlayerInventoryHandler.SINGLE_IDENTIFIER, (player, identifier) -> player.inventory.offhand.size(),
+//				(player, identifier, slot) -> player.inventory.offhand.get(slot), false, false, false);
 		addPlayerInventoryHandler(ARMOR_INVENTORY, gameTime -> PlayerInventoryHandler.SINGLE_IDENTIFIER, (player, identifier) -> 1,
-				(player, identifier, slot) -> player.inventory.armor.get(EquipmentSlotType.CHEST.getIndex()), false, true, false);
+				(player, identifier, slot) -> player.inventory.armorInventory[slot], false, true, false);
 
 	}
 
@@ -45,13 +45,13 @@ public class PlayerInventoryProvider {
 		}
 	}
 
-	public Optional<RenderInfo> getBackpackFromRendered(PlayerEntity player) {
+	public Optional<RenderInfo> getBackpackFromRendered(EntityPlayer player) {
 		for (String handlerName : renderedHandlers) {
 			PlayerInventoryHandler invHandler = playerInventoryHandlers.get(handlerName);
 			if (invHandler == null) {
 				return Optional.empty();
 			}
-			for (String identifier : invHandler.getIdentifiers(player.level.getGameTime())) {
+			for (String identifier : invHandler.getIdentifiers(player.worldObj.getWorldTime())) {
 				for (int slot = 0; slot < invHandler.getSlotCount(player, identifier); slot++) {
 					ItemStack slotStack = invHandler.getStackInSlot(player, identifier, slot);
 					if (slotStack.getItem() instanceof BackpackItem) {
@@ -71,10 +71,10 @@ public class PlayerInventoryProvider {
 		return Optional.ofNullable(getPlayerInventoryHandlers().get(name));
 	}
 
-	public void runOnBackpacks(PlayerEntity player, BackpackInventorySlotConsumer backpackInventorySlotConsumer) {
+	public void runOnBackpacks(EntityPlayer player, BackpackInventorySlotConsumer backpackInventorySlotConsumer) {
 		for (Map.Entry<String, PlayerInventoryHandler> entry : getPlayerInventoryHandlers().entrySet()) {
 			PlayerInventoryHandler invHandler = entry.getValue();
-			for (String identifier : invHandler.getIdentifiers(player.level.getGameTime())) {
+			for (String identifier : invHandler.getIdentifiers(player.worldObj.getWorldTime())) {
 				for (int slot = 0; slot < invHandler.getSlotCount(player, identifier); slot++) {
 					ItemStack slotStack = invHandler.getStackInSlot(player, identifier, slot);
 					if (slotStack.getItem() instanceof BackpackItem && backpackInventorySlotConsumer.accept(slotStack, entry.getKey(), identifier, slot)) {

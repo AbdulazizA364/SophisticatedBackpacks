@@ -1,18 +1,22 @@
 package net.p3pp3rf1y.sophisticatedbackpacks;
 
-import net.minecraft.item.ItemGroup;
+//import net.minecraft.item.ItemGroup;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+//import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+//import net.minecraftforge.event.RegisterCommandsEvent;
+//import net.minecraftforge.eventbus.api.IEventBus;
+//import net.minecraftforge.fml.DistExecutor;
+//import net.minecraftforge.fml.ModLoadingContext;
+//import net.minecraftforge.fml.common.Mod;
+//import net.minecraftforge.fml.config.ModConfig;
+//import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+//import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+//import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.ClientProxy;
 import net.p3pp3rf1y.sophisticatedbackpacks.command.SBPCommand;
@@ -26,13 +30,13 @@ import net.p3pp3rf1y.sophisticatedbackpacks.util.RecipeHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(SophisticatedBackpacks.MOD_ID)
+@Mod(modid = SophisticatedBackpacks.MOD_ID)
 public class SophisticatedBackpacks {
 	public static final String MOD_ID = "sophisticatedbackpacks";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
 	public static final CommonProxy PROXY = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
-	public static final ItemGroup ITEM_GROUP = new SBItemGroup();
+	public static final CreativeTabs ITEM_GROUP = new SBItemGroup();
 
 	@SuppressWarnings("java:S1118") //needs to be public for mod to work
 	public SophisticatedBackpacks() {
@@ -59,7 +63,7 @@ public class SophisticatedBackpacks {
 	}
 
 	private static void serverStarted(FMLServerStartedEvent event) {
-		ServerWorld world = event.getServer().getLevel(World.OVERWORLD);
+		WorldServer world = event.getServer().getLevel(World.OVERWORLD);
 		if (world != null) {
 			RecipeHelper.setWorld(world);
 		}

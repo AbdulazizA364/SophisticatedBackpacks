@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.crafting;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
@@ -29,7 +29,7 @@ public class BackpackDyeRecipe extends SpecialRecipe {
 	}
 
 	@Override
-	public boolean matches(CraftingInventory inv, World worldIn) {
+	public boolean matches(InventoryCrafting inv, World worldIn) {
 		boolean backpackPresent = false;
 		boolean dyePresent = false;
 		for (int slot = 0; slot < inv.getContainerSize(); slot++) {
@@ -53,7 +53,7 @@ public class BackpackDyeRecipe extends SpecialRecipe {
 	}
 
 	@Override
-	public ItemStack assemble(CraftingInventory inv) {
+	public ItemStack assemble(InventoryCrafting inv) {
 		Map<Integer, List<DyeColor>> columnDyes = new HashMap<>();
 		Tuple<Integer, ItemStack> columnBackpack = null;
 

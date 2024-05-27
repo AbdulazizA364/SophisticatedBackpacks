@@ -3,7 +3,7 @@ package net.p3pp3rf1y.sophisticatedbackpacks.common.gui;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.IntComparators;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.ClickType;

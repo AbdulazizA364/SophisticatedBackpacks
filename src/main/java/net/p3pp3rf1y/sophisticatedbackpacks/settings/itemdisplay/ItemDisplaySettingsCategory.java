@@ -1,10 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.settings.itemdisplay;
 
-import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTTagCompound;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackRenderInfo;
+import net.p3pp3rf1y.sophisticatedbackpacks.polyfill.mc.util.DyeColor;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.ISettingsCategory;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.ISlotColorCategory;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.NBTHelper;
@@ -17,14 +17,14 @@ public class ItemDisplaySettingsCategory implements ISettingsCategory, ISlotColo
 	private static final String SLOT_TAG = "slot";
 	private static final String ROTATION_TAG = "rotation";
 	private static final String COLOR_TAG = "color";
-	private CompoundNBT categoryNbt;
-	private final Consumer<CompoundNBT> saveNbt;
+	private NBTTagCompound categoryNbt;
+	private final Consumer<NBTTagCompound> saveNbt;
 	private DyeColor color = DyeColor.RED;
 	private final IBackpackWrapper backpackWrapper;
 	private int slotIndex = -1;
 	private int rotation = 0;
 
-	public ItemDisplaySettingsCategory(IBackpackWrapper backpackWrapper, CompoundNBT categoryNbt, Consumer<CompoundNBT> saveNbt) {
+	public ItemDisplaySettingsCategory(IBackpackWrapper backpackWrapper, NBTTagCompound categoryNbt, Consumer<NBTTagCompound> saveNbt) {
 		this.backpackWrapper = backpackWrapper;
 		this.categoryNbt = categoryNbt;
 		this.saveNbt = saveNbt;
@@ -34,7 +34,7 @@ public class ItemDisplaySettingsCategory implements ISettingsCategory, ISlotColo
 
 	public void unselectSlot() {
 		slotIndex = -1;
-		categoryNbt.remove(SLOT_TAG);
+		categoryNbt.removeTag(SLOT_TAG);
 		saveNbt.accept(categoryNbt);
 		updateRenderInfo();
 	}
@@ -43,16 +43,16 @@ public class ItemDisplaySettingsCategory implements ISettingsCategory, ISlotColo
 		BackpackRenderInfo renderInfo = backpackWrapper.getRenderInfo();
 		if (slotIndex >= 0) {
 			ItemStack stackCopy = backpackWrapper.getInventoryHandler().getStackInSlot(slotIndex).copy();
-			stackCopy.setCount(1);
+			stackCopy.stackSize = (1);
 			renderInfo.setItemDisplayRenderInfo(stackCopy, rotation);
 		} else {
-			renderInfo.setItemDisplayRenderInfo(ItemStack.EMPTY, 0);
+			renderInfo.setItemDisplayRenderInfo(null, 0);
 		}
 	}
 
 	public void selectSlot(int slot) {
 		slotIndex = slot;
-		categoryNbt.putInt(SLOT_TAG, slot);
+		categoryNbt.setInteger(SLOT_TAG, slot);
 		saveNbt.accept(categoryNbt);
 		updateRenderInfo();
 	}
@@ -67,14 +67,14 @@ public class ItemDisplaySettingsCategory implements ISettingsCategory, ISlotColo
 
 	public void rotate(boolean clockwise) {
 		rotation = (rotation + ((clockwise ? 1 : -1) * 45) + 360) % 360;
-		categoryNbt.putInt(ROTATION_TAG, rotation);
+		categoryNbt.setInteger(ROTATION_TAG, rotation);
 		saveNbt.accept(categoryNbt);
 		updateRenderInfo();
 	}
 
 	public void setColor(DyeColor color) {
 		this.color = color;
-		categoryNbt.putInt(COLOR_TAG, color.getId());
+		categoryNbt.setInteger(COLOR_TAG, color.getColor());
 		saveNbt.accept(categoryNbt);
 	}
 
@@ -83,7 +83,7 @@ public class ItemDisplaySettingsCategory implements ISettingsCategory, ISlotColo
 	}
 
 	@Override
-	public void reloadFrom(CompoundNBT categoryNbt) {
+	public void reloadFrom(NBTTagCompound categoryNbt) {
 		this.categoryNbt = categoryNbt;
 		deserialize();
 	}
@@ -91,7 +91,7 @@ public class ItemDisplaySettingsCategory implements ISettingsCategory, ISlotColo
 	private void deserialize() {
 		slotIndex = NBTHelper.getInt(categoryNbt, SLOT_TAG).orElse(-1);
 		rotation = NBTHelper.getInt(categoryNbt, ROTATION_TAG).orElse(0);
-		color = NBTHelper.getInt(categoryNbt, COLOR_TAG).map(c -> color = DyeColor.byId(c)).orElse(DyeColor.RED);
+		color = NBTHelper.getInt(categoryNbt, COLOR_TAG).map(c -> color = DyeColor.fromIndex(c)).orElse(DyeColor.RED);
 	}
 
 	public void itemChanged(int changedSlotIndex) {
@@ -103,6 +103,6 @@ public class ItemDisplaySettingsCategory implements ISettingsCategory, ISlotColo
 
 	@Override
 	public Optional<Integer> getSlotColor(int slotNumber) {
-		return slotIndex == slotNumber ? Optional.of(color.getColorValue()) : Optional.empty();
+		return slotIndex == slotNumber ? Optional.of(color.getColor()) : Optional.empty();
 	}
 }

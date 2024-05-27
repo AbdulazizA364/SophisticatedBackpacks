@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common.gui;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Slot;
@@ -79,7 +79,7 @@ public class BackpackInventorySlot extends Slot {
 	}
 
 	@Override
-	public boolean mayPickup(PlayerEntity playerIn) {
+	public boolean mayPickup(EntityPlayer playerIn) {
 		return !inventoryHandler.extractItem(slotIndex, 1, true).isEmpty();
 	}
 

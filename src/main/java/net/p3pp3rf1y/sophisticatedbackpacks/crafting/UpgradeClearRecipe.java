@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.crafting;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipe;
@@ -17,7 +17,7 @@ public class UpgradeClearRecipe extends SpecialRecipe {
 	}
 
 	@Override
-	public boolean matches(CraftingInventory inventory, World pLevel) {
+	public boolean matches(InventoryCrafting inventory, World pLevel) {
 		boolean upgradePresent = false;
 		for (ItemStack stack : inventory.items) {
 			if (!stack.isEmpty()) {
@@ -33,7 +33,7 @@ public class UpgradeClearRecipe extends SpecialRecipe {
 	}
 
 	@Override
-	public ItemStack assemble(CraftingInventory inventory) {
+	public ItemStack assemble(InventoryCrafting inventory) {
 		ItemStack upgrade = ItemStack.EMPTY;
 		for (ItemStack stack : inventory.items) {
 			if (!stack.isEmpty() && stack.getItem() instanceof UpgradeItemBase) {

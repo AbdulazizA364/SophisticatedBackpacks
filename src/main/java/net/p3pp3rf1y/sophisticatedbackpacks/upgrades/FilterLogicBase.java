@@ -1,7 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.StringNBT;
+//import net.minecraft.nbt.StringNBT;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.ItemStackHelper;
@@ -37,7 +38,7 @@ public class FilterLogicBase {
 	}
 
 	public boolean stackMatchesFilter(ItemStack stack, ItemStack filter) {
-		if (filter.isEmpty()) {
+		if (filter == null || filter.stackSize <= 0) {
 			return false;
 		}
 
@@ -47,11 +48,11 @@ public class FilterLogicBase {
 			if (!stack.getItem().getRegistryName().getNamespace().equals(filter.getItem().getRegistryName().getNamespace())) {
 				return false;
 			}
-		} else if (primaryMatch == PrimaryMatch.ITEM && !ItemStack.isSame(stack, filter)) {
+		} else if (primaryMatch == PrimaryMatch.ITEM && !ItemStack.areItemStacksEqual(stack, filter)) {
 			return false;
 		}
 
-		if (shouldMatchDurability() && stack.getDamageValue() != filter.getDamageValue()) {
+		if (shouldMatchDurability() && stack.getItemDamage() != filter.getItemDamage()) {
 			return false;
 		}
 
@@ -77,7 +78,7 @@ public class FilterLogicBase {
 		if (tagNames == null) {
 			return;
 		}
-		NBTHelper.setList(upgrade, parentTagKey, "tags", tagNames, t -> StringNBT.valueOf(t.toString()));
+		NBTHelper.setList(upgrade, parentTagKey, "tags", tagNames, t -> NBTTagString.valueOf(t.toString()));
 	}
 
 	public void removeTagName(ResourceLocation tagName) {
@@ -90,7 +91,7 @@ public class FilterLogicBase {
 
 	protected void initTags() {
 		tagNames = NBTHelper.getCollection(upgrade, parentTagKey, "tags", Constants.NBT.TAG_STRING,
-				elementNbt -> Optional.of(new ResourceLocation(elementNbt.getAsString())), TreeSet::new).orElse(new TreeSet<>());
+				elementNbt -> Optional.of(new ResourceLocation(elementNbt.toString())), TreeSet::new).orElse(new TreeSet<>());
 	}
 
 	public void setAllowList(boolean isAllowList) {

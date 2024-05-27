@@ -1,17 +1,19 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.util;
 
 import com.google.common.collect.Lists;
-import net.minecraft.entity.player.PlayerEntity;
+import net.MUI2.future.IItemHandler;
+import net.MUI2.future.IItemHandlerModifiable;
+import net.MUI2.future.ItemHandlerHelper;
+import net.MUI2.future.ItemStackHandler;
+import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.MathHelper;
+//import net.minecraft.util.SoundCategory;
+//import net.minecraft.util.SoundEvents;
+import net.minecraftforge.client.event.sound.SoundEvent;
+import net.p3pp3rf1y.sophisticatedbackpacks.polyfill.mc.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IPickupResponseUpgrade;
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -41,7 +43,7 @@ public class InventoryHelper {
 	public static boolean hasItem(IItemHandler inventory, Predicate<ItemStack> matches) {
 		AtomicBoolean result = new AtomicBoolean(false);
 		iterate(inventory, (slot, stack) -> {
-			if (!stack.isEmpty() && matches.test(stack)) {
+			if (stack != null && matches.test(stack)) {
 				result.set(true);
 			}
 		}, result::get);
@@ -51,7 +53,7 @@ public class InventoryHelper {
 	public static Set<Integer> getItemSlots(IItemHandler inventory, Predicate<ItemStack> matches) {
 		Set<Integer> slots = new HashSet<>();
 		iterate(inventory, (slot, stack) -> {
-			if (!stack.isEmpty() && matches.test(stack)) {
+			if (stack != null && matches.test(stack)) {
 				slots.add(slot);
 			}
 		});
@@ -63,7 +65,7 @@ public class InventoryHelper {
 		int slotsB = handlerB.getSlots();
 		for (int slot = 0; slot < slotsA && slot < slotsB; slot++) {
 			ItemStack slotStack = handlerA.getStackInSlot(slot);
-			if (!slotStack.isEmpty()) {
+			if (slotStack != null) {
 				handlerB.setStackInSlot(slot, slotStack);
 			}
 		}
@@ -81,7 +83,7 @@ public class InventoryHelper {
 		List<ItemStack> remaining = new ArrayList<>();
 		for (ItemStack stack : stacks) {
 			ItemStack result = insertIntoInventory(stack, targetInventory, false);
-			if (!result.isEmpty()) {
+			if (result != null) {
 				remaining.add(result);
 			}
 		}
@@ -103,24 +105,24 @@ public class InventoryHelper {
 
 		ItemStack remainingStack = stack.copy();
 		int slots = inventory.getSlots();
-		for (int slot = 0; slot < slots && !remainingStack.isEmpty(); slot++) {
+		for (int slot = 0; slot < slots && remainingStack != null; slot++) {
 			remainingStack = inventory.insertItem(slot, remainingStack, simulate);
 		}
 		return remainingStack;
 	}
 
 	public static ItemStack extractFromInventory(Item item, int count, IItemHandler inventory, boolean simulate) {
-		ItemStack ret = ItemStack.EMPTY;
+		ItemStack ret = null ;
 		int slots = inventory.getSlots();
-		for (int slot = 0; slot < slots && ret.getCount() < count; slot++) {
+		for (int slot = 0; slot < slots && ret.stackSize < count; slot++) {
 			ItemStack slotStack = inventory.getStackInSlot(slot);
-			if (slotStack.getItem() == item && (ret.isEmpty() || ItemHandlerHelper.canItemStacksStack(ret, slotStack))) {
-				int toExtract = Math.min(slotStack.getCount(), count - ret.getCount());
+			if (slotStack.getItem() == item && (ret == null || ret.stackSize <= 0 || ItemHandlerHelper.canItemStacksStack(ret, slotStack))) {
+				int toExtract = Math.min(slotStack.stackSize, count - ret.stackSize);
 				ItemStack extractedStack = inventory.extractItem(slot, toExtract, simulate);
-				if (ret.isEmpty()) {
+				if (ret == null || ret.stackSize <= 0) {
 					ret = extractedStack;
 				} else {
-					ret.setCount(ret.getCount() + extractedStack.getCount());
+					ret.stackSize = (ret.stackSize + extractedStack.stackSize);
 				}
 			}
 		}
@@ -130,20 +132,20 @@ public class InventoryHelper {
 	public static ItemStack extractFromInventory(ItemStack stack, IItemHandler inventory, boolean simulate) {
 		int extractedCount = 0;
 		int slots = inventory.getSlots();
-		for (int slot = 0; slot < slots && extractedCount < stack.getCount(); slot++) {
+		for (int slot = 0; slot < slots && extractedCount < stack.stackSize; slot++) {
 			ItemStack slotStack = inventory.getStackInSlot(slot);
 			if (ItemHandlerHelper.canItemStacksStack(stack, slotStack)) {
-				int toExtract = Math.min(slotStack.getCount(), stack.getCount() - extractedCount);
-				extractedCount += inventory.extractItem(slot, toExtract, simulate).getCount();
+				int toExtract = Math.min(slotStack.stackSize, stack.stackSize - extractedCount);
+				extractedCount += inventory.extractItem(slot, toExtract, simulate).stackSize;
 			}
 		}
 
 		if (extractedCount == 0) {
-			return ItemStack.EMPTY;
+			return null;
 		}
 
 		ItemStack result = stack.copy();
-		result.setCount(extractedCount);
+		result.stackSize = (extractedCount);
 
 		return result;
 	}
@@ -152,18 +154,18 @@ public class InventoryHelper {
 		return runPickupOnBackpack(world, null, remainingStack, backpackWrapper, simulate);
 	}
 
-	public static ItemStack runPickupOnBackpack(World world, @Nullable PlayerEntity player, ItemStack remainingStack, IBackpackWrapper backpackWrapper, boolean simulate) {
+	public static ItemStack runPickupOnBackpack(World world, @Nullable EntityPlayer player, ItemStack remainingStack, IBackpackWrapper backpackWrapper, boolean simulate) {
 		List<IPickupResponseUpgrade> pickupUpgrades = backpackWrapper.getUpgradeHandler().getWrappersThatImplement(IPickupResponseUpgrade.class);
 
 		for (IPickupResponseUpgrade pickupUpgrade : pickupUpgrades) {
-			int countBeforePickup = remainingStack.getCount();
+			int countBeforePickup = remainingStack.stackSize;
 			remainingStack = pickupUpgrade.pickup(world, remainingStack, simulate);
-			if (!simulate && player != null && remainingStack.getCount() != countBeforePickup) {
+			if (!simulate && player != null && remainingStack.stackSize != countBeforePickup) {
 				playPickupSound(world, player);
 			}
 
-			if (remainingStack.isEmpty()) {
-				return ItemStack.EMPTY;
+			if (remainingStack == null || remainingStack.stackSize <= 0) {
+				return null;
 			}
 		}
 
@@ -171,8 +173,8 @@ public class InventoryHelper {
 	}
 
 	@SuppressWarnings("squid:S1764") // this actually isn't a case of identical values being used as both side are random float value thus -1 to 1 as a result
-	private static void playPickupSound(World world, @Nonnull PlayerEntity player) {
-		world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, (world.random.nextFloat() - world.random.nextFloat()) * 1.4F + 2.0F);
+	private static void playPickupSound(World world, @Nonnull EntityPlayer player) {
+        world.playSoundAtEntity(player, "random.pop", 0.2F, (world.rand.nextFloat() - world.rand.nextFloat()) * 1.4F + 2.0F);
 	}
 
 	public static void iterate(IItemHandler handler, BiConsumer<Integer, ItemStack> actOn) {
@@ -194,7 +196,7 @@ public class InventoryHelper {
 		MutableInt missingCount = new MutableInt(expectedCount);
 		iterate(itemHandler, (slot, stack) -> {
 			if (ItemHandlerHelper.canItemStacksStack(stack, filter)) {
-				missingCount.subtract(Math.min(stack.getCount(), missingCount.getValue()));
+				missingCount.subtract(Math.min(stack.stackSize, missingCount.getValue()));
 			}
 		}, () -> missingCount.getValue() == 0);
 		return missingCount.getValue();
@@ -217,17 +219,17 @@ public class InventoryHelper {
 		int slotsA = handlerA.getSlots();
 		for (int slot = 0; slot < slotsA; slot++) {
 			ItemStack slotStack = handlerA.getStackInSlot(slot);
-			if (slotStack.isEmpty()) {
+			if (slotStack == null || slotStack.stackSize <= 0) {
 				continue;
 			}
 
 			ItemStack resultStack = insertIntoInventory(slotStack, handlerB, true);
-			int countToExtract = slotStack.getCount() - resultStack.getCount();
-			if (countToExtract > 0 && handlerA.extractItem(slot, countToExtract, true).getCount() == countToExtract) {
+			int countToExtract = slotStack.stackSize - resultStack.stackSize;
+			if (countToExtract > 0 && handlerA.extractItem(slot, countToExtract, true).stackSize == countToExtract) {
 				InventoryHelper.insertIntoInventory(handlerA.extractItem(slot, countToExtract, false), handlerB, false);
 				onInserted.accept(() -> {
 					ItemStack copiedStack = slotStack.copy();
-					copiedStack.setCount(countToExtract);
+					copiedStack.stackSize = (countToExtract);
 					return copiedStack;
 				});
 			}
@@ -237,7 +239,7 @@ public class InventoryHelper {
 	public static boolean isEmpty(IItemHandler itemHandler) {
 		int slots = itemHandler.getSlots();
 		for (int slot = 0; slot < slots; slot++) {
-			if (!itemHandler.getStackInSlot(slot).isEmpty()) {
+			if (itemHandler.getStackInSlot(slot) != null) {
 				return false;
 			}
 		}
@@ -246,22 +248,23 @@ public class InventoryHelper {
 
 	public static ItemStack getAndRemove(IItemHandler itemHandler, int slot) {
 		if (slot >= itemHandler.getSlots()) {
-			return ItemStack.EMPTY;
+			return null;
 		}
-		return itemHandler.extractItem(slot, itemHandler.getStackInSlot(slot).getCount(), false);
+		return itemHandler.extractItem(slot, itemHandler.getStackInSlot(slot).stackSize, false);
 	}
 
-	public static void insertOrDropItem(PlayerEntity player, ItemStack stack, IItemHandler... inventories) {
+	public static void insertOrDropItem(EntityPlayer player, ItemStack stack, IItemHandler... inventories) {
 		ItemStack ret = stack;
 		for (IItemHandler inventory : inventories) {
 			ret = insertIntoInventory(ret, inventory, false);
-			if (ret.isEmpty()) {
+			if (ret == null || ret.stackSize <= 0) {
 				return;
 			}
 		}
-		if (!ret.isEmpty()) {
-			player.drop(ret, true);
+		if (ret != null) {
+			player.dropPlayerItemWithRandomChoice(ret, true);
 		}
+
 	}
 
 	static Map<ItemStackKey, Integer> getCompactedStacks(IItemHandler handler) {
@@ -271,11 +274,11 @@ public class InventoryHelper {
 	static Map<ItemStackKey, Integer> getCompactedStacks(IItemHandler handler, Set<Integer> ignoreSlots) {
 		Map<ItemStackKey, Integer> ret = new HashMap<>();
 		iterate(handler, (slot, stack) -> {
-			if (stack.isEmpty() || ignoreSlots.contains(slot)) {
+			if (stack== null || stack.stackSize <= 0 || ignoreSlots.contains(slot)) {
 				return;
 			}
 			ItemStackKey itemStackKey = new ItemStackKey(stack);
-			ret.put(itemStackKey, ret.computeIfAbsent(itemStackKey, fs -> 0) + stack.getCount());
+			ret.put(itemStackKey, ret.computeIfAbsent(itemStackKey, fs -> 0) + stack.stackSize);
 		});
 		return ret;
 	}
@@ -288,7 +291,7 @@ public class InventoryHelper {
 		List<ItemStack> ret = new ArrayList<>();
 		sortedList.forEach(e -> {
 			ItemStack stackCopy = e.getKey().getStack().copy();
-			stackCopy.setCount(e.getValue());
+			stackCopy.stackSize = (e.getValue());
 			ret.add(stackCopy);
 		});
 		return ret;
@@ -297,7 +300,7 @@ public class InventoryHelper {
 	public static Set<ItemStackKey> getUniqueStacks(IItemHandler handler) {
 		Set<ItemStackKey> uniqueStacks = new HashSet<>();
 		iterate(handler, (slot, stack) -> {
-			if (stack.isEmpty()) {
+			if (stack == null || stack.stackSize <= 0) {
 				return;
 			}
 			ItemStackKey itemStackKey = new ItemStackKey(stack);
@@ -310,7 +313,7 @@ public class InventoryHelper {
 		List<Integer> list = Lists.newArrayList();
 
 		for (int i = 0; i < inventory.getSlots(); ++i) {
-			if (inventory.getStackInSlot(i).isEmpty()) {
+			if (inventory.getStackInSlot(i) == null || inventory.getStackInSlot(i).stackSize <= 0) {
 				list.add(i);
 			}
 		}
@@ -325,9 +328,9 @@ public class InventoryHelper {
 
 		while (iterator.hasNext()) {
 			ItemStack itemstack = iterator.next();
-			if (itemstack.isEmpty()) {
+			if (itemstack == null || itemstack.stackSize <= 0) {
 				iterator.remove();
-			} else if (itemstack.getCount() > 1) {
+			} else if (itemstack.stackSize > 1) {
 				list.add(itemstack);
 				iterator.remove();
 			}
@@ -335,15 +338,15 @@ public class InventoryHelper {
 
 		while (emptySlotsCount - stacks.size() - list.size() > 0 && !list.isEmpty()) {
 			ItemStack itemstack2 = list.remove(MathHelper.nextInt(rand, 0, list.size() - 1));
-			int i = MathHelper.nextInt(rand, 1, itemstack2.getCount() / 2);
-			ItemStack itemstack1 = itemstack2.split(i);
-			if (itemstack2.getCount() > 1 && rand.nextBoolean()) {
+			int i = MathHelper.nextInt(rand, 1, itemstack2.stackSize / 2);
+			ItemStack itemstack1 = itemstack2.splitStack(i);
+			if (itemstack2.stackSize > 1 && rand.nextBoolean()) {
 				list.add(itemstack2);
 			} else {
 				stacks.add(itemstack2);
 			}
 
-			if (itemstack1.getCount() > 1 && rand.nextBoolean()) {
+			if (itemstack1.stackSize > 1 && rand.nextBoolean()) {
 				list.add(itemstack1);
 			} else {
 				stacks.add(itemstack1);

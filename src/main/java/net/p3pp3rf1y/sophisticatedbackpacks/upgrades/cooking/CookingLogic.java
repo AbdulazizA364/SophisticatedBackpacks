@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.AbstractCookingRecipe;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
@@ -37,17 +37,17 @@ public class CookingLogic<T extends AbstractCookingRecipe> {
 	private final Predicate<ItemStack> isInput;
 	private final double cookingSpeedMultiplier;
 	private final double fuelEfficiencyMultiplier;
-	private final IRecipeType<T> recipeType;
+	private final IRecipe<T> recipeType;
 
 	private boolean paused = false;
 	private long remainingCookTime = 0;
 	private long remainingBurnTime = 0;
 
-	public CookingLogic(ItemStack upgrade, Consumer<ItemStack> saveHandler, Config.Common.CookingUpgradeConfig cookingUpgradeConfig, IRecipeType<T> recipeType, float burnTimeModifier) {
+	public CookingLogic(ItemStack upgrade, Consumer<ItemStack> saveHandler, Config.Common.CookingUpgradeConfig cookingUpgradeConfig, IRecipe<T> recipeType, float burnTimeModifier) {
 		this(upgrade, saveHandler, s -> getBurnTime(s, recipeType, burnTimeModifier) > 0, s -> RecipeHelper.getCookingRecipe(s, recipeType).isPresent(), cookingUpgradeConfig, recipeType, burnTimeModifier);
 	}
 
-	public CookingLogic(ItemStack upgrade, Consumer<ItemStack> saveHandler, Predicate<ItemStack> isFuel, Predicate<ItemStack> isInput, Config.Common.CookingUpgradeConfig cookingUpgradeConfig, IRecipeType<T> recipeType, float burnTimeModifier) {
+	public CookingLogic(ItemStack upgrade, Consumer<ItemStack> saveHandler, Predicate<ItemStack> isFuel, Predicate<ItemStack> isInput, Config.Common.CookingUpgradeConfig cookingUpgradeConfig, IRecipe<T> recipeType, float burnTimeModifier) {
 		this.upgrade = upgrade;
 		this.saveHandler = saveHandler;
 		this.isFuel = isFuel;
@@ -256,7 +256,7 @@ public class CookingLogic<T extends AbstractCookingRecipe> {
 		}
 	}
 
-	private static <T extends AbstractCookingRecipe> int getBurnTime(ItemStack fuel, IRecipeType<T> recipeType, float burnTimeModifier) {
+	private static <T extends AbstractCookingRecipe> int getBurnTime(ItemStack fuel, IRecipe<T> recipeType, float burnTimeModifier) {
 		return (int) (ForgeHooks.getBurnTime(fuel, recipeType) * burnTimeModifier);
 	}
 

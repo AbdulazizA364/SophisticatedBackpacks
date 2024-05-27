@@ -34,7 +34,7 @@ public abstract class UpgradeWrapperBase<W extends IUpgradeWrapper, T extends Up
 	}
 
 	protected void setCooldown(World world, int time) {
-		cooldown = world.getGameTime() + time;
+		cooldown = world.getWorldTime() + time;
 	}
 
 	public long getCooldownTime() {
@@ -42,7 +42,7 @@ public abstract class UpgradeWrapperBase<W extends IUpgradeWrapper, T extends Up
 	}
 
 	public boolean isInCooldown(World world) {
-		return getCooldownTime() > world.getGameTime();
+		return getCooldownTime() > world.getWorldTime();
 	}
 
 	@Override

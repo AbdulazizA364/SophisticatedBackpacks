@@ -1,7 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.toolswapper;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.util.IStringSerializable;
+import net.p3pp3rf1y.sophisticatedbackpacks.polyfill.mc.util.IStringSerializable;
+//import net.minecraft.util.IStringSerializable;
 
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public enum ToolSwapMode implements IStringSerializable {
 	}
 
 	@Override
-	public String getSerializedName() {
+	public String getName () {
 		return name;
 	}
 
@@ -31,7 +32,7 @@ public enum ToolSwapMode implements IStringSerializable {
 	static {
 		ImmutableMap.Builder<String, ToolSwapMode> builder = new ImmutableMap.Builder<>();
 		for (ToolSwapMode value : ToolSwapMode.values()) {
-			builder.put(value.getSerializedName(), value);
+			builder.put(value.getName(), value);
 		}
 		NAME_VALUES = builder.build();
 		VALUES = values();

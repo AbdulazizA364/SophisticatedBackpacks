@@ -8,7 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -126,7 +126,7 @@ public class CommonProxy {
 	}
 
 	private void onCauldronInteract(PlayerInteractEvent.RightClickBlock event) {
-		PlayerEntity player = event.getPlayer();
+		EntityPlayer player = event.getPlayer();
 		Hand hand = event.getHand();
 		ItemStack backpack = player.getItemInHand(hand);
 		if (!(backpack.getItem() instanceof BackpackItem)) {
@@ -166,7 +166,7 @@ public class CommonProxy {
 		if (event.getWorld().isClientSide) {
 			return;
 		}
-		PlayerEntity player = event.getPlayer();
+		EntityPlayer player = event.getPlayer();
 		BlockPos pos = event.getPos();
 		playerInventoryProvider.runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> backpack.getCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 				.map(wrapper -> {
@@ -180,7 +180,7 @@ public class CommonProxy {
 	}
 
 	private void onAttackEntity(AttackEntityEvent event) {
-		PlayerEntity player = event.getPlayer();
+		EntityPlayer player = event.getPlayer();
 		if (player.level.isClientSide) {
 			return;
 		}
@@ -229,7 +229,7 @@ public class CommonProxy {
 		}
 
 		AtomicReference<ItemStack> remainingStackSimulated = new AtomicReference<>(itemEntity.getItem().copy());
-		PlayerEntity player = event.getPlayer();
+		EntityPlayer player = event.getPlayer();
 		World world = player.getCommandSenderWorld();
 		playerInventoryProvider.runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> backpack.getCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 				.map(wrapper -> {

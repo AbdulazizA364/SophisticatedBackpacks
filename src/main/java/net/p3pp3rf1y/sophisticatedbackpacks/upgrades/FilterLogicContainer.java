@@ -1,8 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades;
 
-import net.minecraft.inventory.container.Slot;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+
+import net.MUI2.future.IItemHandler;
+import net.MUI2.future.ItemStackHandler;
+import net.minecraft.inventory.Slot;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.FilterSlotItemHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.InventoryHelper;
 

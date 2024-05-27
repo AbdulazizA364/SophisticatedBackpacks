@@ -1,7 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.xppump;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+//import net.minecraft.entity.player.PlayerEntity;
+//import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.UpgradeContainerBase;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.UpgradeContainerType;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.NBTHelper;
@@ -18,13 +20,13 @@ public class XpPumpUpgradeContainer extends UpgradeContainerBase<XpPumpUpgradeWr
 	private static final String DATA_LEVELS_TO_TAKE = "levelsToTake";
 	private static final String DATA_MEND_ITEMS = "mendItems";
 
-	public XpPumpUpgradeContainer(PlayerEntity player, int upgradeContainerId, XpPumpUpgradeWrapper upgradeWrapper, UpgradeContainerType<XpPumpUpgradeWrapper, XpPumpUpgradeContainer> type) {
+	public XpPumpUpgradeContainer(EntityPlayer player, int upgradeContainerId, XpPumpUpgradeWrapper upgradeWrapper, UpgradeContainerType<XpPumpUpgradeWrapper, XpPumpUpgradeContainer> type) {
 		super(player, upgradeContainerId, upgradeWrapper, type);
 	}
 
 	public void setDirection(AutomationDirection direction) {
 		upgradeWrapper.setDirection(direction);
-		sendDataToServer(() -> NBTHelper.putEnumConstant(new CompoundNBT(), DATA_DIRECTION, direction));
+		sendDataToServer(() -> NBTHelper.putEnumConstant(new NBTTagCompound(), DATA_DIRECTION, direction));
 	}
 
 	public AutomationDirection getDirection() {
@@ -40,7 +42,7 @@ public class XpPumpUpgradeContainer extends UpgradeContainerBase<XpPumpUpgradeWr
 			return;
 		}
 		upgradeWrapper.setLevel(level);
-		sendDataToServer(() -> NBTHelper.putInt(new CompoundNBT(), DATA_LEVEL, level));
+		sendDataToServer(() -> NBTHelper.putInt(new NBTTagCompound(), DATA_LEVEL, level));
 	}
 
 	public void setLevelsToStore(int levelsToStore) {
@@ -49,7 +51,7 @@ public class XpPumpUpgradeContainer extends UpgradeContainerBase<XpPumpUpgradeWr
 		}
 
 		upgradeWrapper.setLevelsToStore(levelsToStore);
-		sendDataToServer(() -> NBTHelper.putInt(new CompoundNBT(), DATA_LEVELS_TO_STORE, levelsToStore));
+		sendDataToServer(() -> NBTHelper.putInt(new NBTTagCompound(), DATA_LEVELS_TO_STORE, levelsToStore));
 	}
 
 	public void setLevelsToTake(int levelsToTake) {
@@ -58,7 +60,7 @@ public class XpPumpUpgradeContainer extends UpgradeContainerBase<XpPumpUpgradeWr
 		}
 
 		upgradeWrapper.setLevelsToTake(levelsToTake);
-		sendDataToServer(() -> NBTHelper.putInt(new CompoundNBT(), DATA_LEVELS_TO_TAKE, levelsToTake));
+		sendDataToServer(() -> NBTHelper.putInt(new NBTTagCompound(), DATA_LEVELS_TO_TAKE, levelsToTake));
 	}
 
 	public void takeLevels() {
@@ -78,7 +80,7 @@ public class XpPumpUpgradeContainer extends UpgradeContainerBase<XpPumpUpgradeWr
 	}
 
 	private void triggerAction(String actionName) {
-		sendDataToServer(() -> NBTHelper.putString(new CompoundNBT(), DATA_ACTION, actionName));
+		sendDataToServer(() -> NBTHelper.putString(new NBTTagCompound(), DATA_ACTION, actionName));
 	}
 
 	public int getLevelsToStore() {
@@ -99,18 +101,18 @@ public class XpPumpUpgradeContainer extends UpgradeContainerBase<XpPumpUpgradeWr
 	}
 
 	@Override
-	public void handleMessage(CompoundNBT data) {
-		if (data.contains(DATA_DIRECTION)) {
+	public void handleMessage(NBTTagCompound data) {
+		if (data.hasKey (DATA_DIRECTION)) {
 			setDirection(AutomationDirection.fromName(data.getString(DATA_DIRECTION)));
-		} else if (data.contains(DATA_LEVEL)) {
-			setLevel(data.getInt(DATA_LEVEL));
-		} else if (data.contains(DATA_LEVELS_TO_STORE)) {
-			setLevelsToStore(data.getInt(DATA_LEVELS_TO_STORE));
-		} else if (data.contains(DATA_LEVELS_TO_TAKE)) {
-			setLevelsToTake(data.getInt(DATA_LEVELS_TO_TAKE));
-		} else if (data.contains(DATA_MEND_ITEMS)) {
+		} else if (data.hasKey (DATA_LEVEL)) {
+			setLevel(data.getInteger(DATA_LEVEL));
+		} else if (data.hasKey (DATA_LEVELS_TO_STORE)) {
+			setLevelsToStore(data.getInteger(DATA_LEVELS_TO_STORE));
+		} else if (data.hasKey (DATA_LEVELS_TO_TAKE)) {
+			setLevelsToTake(data.getInteger(DATA_LEVELS_TO_TAKE));
+		} else if (data.hasKey (DATA_MEND_ITEMS)) {
 			setMendItems(data.getBoolean(DATA_MEND_ITEMS));
-		} else if (data.contains(DATA_ACTION)) {
+		} else if (data.hasKey (DATA_ACTION)) {
 			switch (data.getString(DATA_ACTION)) {
 				case ACTION_TAKE_LEVELS:
 					upgradeWrapper.giveLevelsToPlayer(player);

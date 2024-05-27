@@ -2,10 +2,12 @@ package net.p3pp3rf1y.sophisticatedbackpacks.settings.memory;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.StringNBT;
+//import net.minecraft.nbt.CompoundNBT;
+//import net.minecraft.nbt.StringNBT;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
+//import net.minecraftforge.registries.ForgeRegistries;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackInventoryHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.ISettingsCategory;
@@ -23,12 +25,12 @@ public class MemorySettingsCategory implements ISettingsCategory {
 	public static final String NAME = "memory";
 	private static final String SLOT_FILTER_ITEMS_TAG = "slotFilterItems";
 	private final IBackpackWrapper backpackWrapper;
-	private CompoundNBT categoryNbt;
-	private final Consumer<CompoundNBT> saveNbt;
+	private NBTTagCompound categoryNbt;
+	private final Consumer<NBTTagCompound> saveNbt;
 	private final Map<Integer, Item> slotFilterItems = new TreeMap<>();
 	private final Map<Item, Set<Integer>> filterItemSlots = new HashMap<>();
 
-	public MemorySettingsCategory(IBackpackWrapper backpackWrapper, CompoundNBT categoryNbt, Consumer<CompoundNBT> saveNbt) {
+	public MemorySettingsCategory(IBackpackWrapper backpackWrapper, NBTTagCompound categoryNbt, Consumer<NBTTagCompound> saveNbt) {
 		this.backpackWrapper = backpackWrapper;
 		this.categoryNbt = categoryNbt;
 		this.saveNbt = saveNbt;
@@ -38,14 +40,14 @@ public class MemorySettingsCategory implements ISettingsCategory {
 
 	private void deserialize() {
 		//TODO remove this legacy thing in the future - only included here as the tag below is no longer used
-		if (categoryNbt.contains("slotFilterStacks")) {
-			categoryNbt.remove("slotFilterStacks");
+		if (categoryNbt.hasKey ("slotFilterStacks")) {
+			categoryNbt.removeTag("slotFilterStacks");
 			saveNbt.accept(categoryNbt);
 		}
 
-		NBTHelper.getMap(categoryNbt.getCompound(SLOT_FILTER_ITEMS_TAG),
+		NBTHelper.getMap(categoryNbt.getCompoundTag(SLOT_FILTER_ITEMS_TAG),
 						Integer::valueOf,
-						(k, v) -> Optional.ofNullable(ForgeRegistries.ITEMS.getValue(new ResourceLocation(v.getAsString()))))
+						(k, v) -> Optional.ofNullable(ForgeRegistries.ITEMS.getValue(new ResourceLocation(v.toString()))))
 				.ifPresent(map -> map.forEach(this::addSlotItem));
 	}
 
@@ -54,7 +56,7 @@ public class MemorySettingsCategory implements ISettingsCategory {
 			return true;
 		}
 
-		return !stack.isEmpty() && stack.getItem() == slotFilterItems.get(slotNumber);
+		return stack != null && stack.getItem() == slotFilterItems.get(slotNumber);
 	}
 
 	public Optional<Item> getSlotFilterItem(int slotNumber) {
@@ -83,7 +85,7 @@ public class MemorySettingsCategory implements ISettingsCategory {
 			BackpackInventoryHandler inventoryHandler = backpackWrapper.getInventoryHandler();
 			if (slot < inventoryHandler.getSlots()) {
 				ItemStack stackInSlot = inventoryHandler.getStackInSlot(slot);
-				if (!stackInSlot.isEmpty()) {
+				if (stackInSlot != null) {
 					Item item = stackInSlot.getItem();
 					addSlotItem(slot, item);
 				}
@@ -113,12 +115,12 @@ public class MemorySettingsCategory implements ISettingsCategory {
 
 	private void serializeFilterItems() {
 		//noinspection ConstantConditions - item registry name exists in this content otherwise player wouldn't be able to work with it
-		NBTHelper.putMap(categoryNbt, SLOT_FILTER_ITEMS_TAG, slotFilterItems, String::valueOf, i -> StringNBT.valueOf(i.getRegistryName().toString()));
+		NBTHelper.putMap(categoryNbt, SLOT_FILTER_ITEMS_TAG, slotFilterItems, String::valueOf, i -> NBTTagString.valueOf(i.getUnlocalizedName().toString()));
 		saveNbt.accept(categoryNbt);
 	}
 
 	@Override
-	public void reloadFrom(CompoundNBT categoryNbt) {
+	public void reloadFrom(NBTTagCompound categoryNbt) {
 		this.categoryNbt = categoryNbt;
 		slotFilterItems.clear();
 		filterItemSlots.clear();

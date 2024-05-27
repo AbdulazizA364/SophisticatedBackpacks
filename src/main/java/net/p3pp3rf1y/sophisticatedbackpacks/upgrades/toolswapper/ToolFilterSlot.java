@@ -1,12 +1,14 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.toolswapper;
 
-import net.minecraft.entity.player.PlayerEntity;
+//import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.Slot;
+//import net.minecraft.inventory.Inventory;
+//import net.minecraft.inventory.container.Slot;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+//import net.minecraft.util.text.ITextComponent;
+//import net.minecraft.util.text.StringTextComponent;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.INameableEmptySlot;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.IFilterSlot;
 
@@ -59,13 +61,13 @@ public class ToolFilterSlot extends Slot implements IFilterSlot, INameableEmptyS
 	@Override
 	public ItemStack remove(int amount) {
 		if (amount > 0) {
-			set(ItemStack.EMPTY);
+			set(null);
 		}
 		return getItem();
 	}
 
 	@Override
-	public boolean mayPickup(PlayerEntity playerIn) {
+	public boolean mayPickup(EntityPlayer playerIn) {
 		return false;
 	}
 
@@ -76,7 +78,7 @@ public class ToolFilterSlot extends Slot implements IFilterSlot, INameableEmptyS
 
 	@Override
 	public boolean mayPlace(ItemStack stack) {
-		return stack.isEmpty() || (stack.getMaxStackSize() == 1 && isToolTypeValid.test(stack));
+		return stack == null || stack.stackSize <= 0 || (stack.getMaxStackSize() == 1 && isToolTypeValid.test(stack));
 	}
 
 	@Override

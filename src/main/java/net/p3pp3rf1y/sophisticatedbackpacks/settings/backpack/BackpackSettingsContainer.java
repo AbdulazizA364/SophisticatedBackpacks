@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.settings.backpack;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackSettingsManager;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.SettingsContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.SettingsContainerBase;
@@ -15,11 +15,11 @@ public class BackpackSettingsContainer extends SettingsContainerBase<BackpackSet
 	}
 
 	@Override
-	public void handleMessage(CompoundNBT data) {
-		if (data.contains(CONTEXT_TAG)) {
-			context = Context.fromId(data.getInt(CONTEXT_TAG));
+	public void handleMessage(NBTTagCompound data) {
+		if (data.hasKey (CONTEXT_TAG)) {
+			context = Context.fromId(data.getInteger(CONTEXT_TAG));
 		} else {
-			for (String tagName : data.getAllKeys()) {
+			for (String tagName : data.func_150296_c()) {
 				BackpackSettingsManager.getBackpackSetting(tagName).ifPresent(setting -> setSettingValue(getPlayer(), setting, data));
 			}
 		}
@@ -34,7 +34,7 @@ public class BackpackSettingsContainer extends SettingsContainerBase<BackpackSet
 		return context;
 	}
 
-	private PlayerEntity getPlayer() {
+	private EntityPlayer getPlayer() {
 		return getSettingsContainer().getPlayer();
 	}
 
@@ -62,7 +62,7 @@ public class BackpackSettingsContainer extends SettingsContainerBase<BackpackSet
 		}
 	}
 
-	private <T> void setSettingValue(PlayerEntity player, BackpackSettingsManager.BackpackSetting<T> setting, CompoundNBT data) {
+	private <T> void setSettingValue(EntityPlayer player, BackpackSettingsManager.BackpackSetting<T> setting, NBTTagCompound data) {
 		setting.getValue(data).ifPresent(value -> {
 			if (context == Context.PLAYER) {
 				BackpackSettingsManager.setPlayerSetting(player, setting, value);
@@ -72,7 +72,7 @@ public class BackpackSettingsContainer extends SettingsContainerBase<BackpackSet
 		});
 	}
 
-	private void toggleBooleanSetting(PlayerEntity player, BackpackSettingsManager.BackpackSetting<Boolean> setting) {
+	private void toggleBooleanSetting(EntityPlayer player, BackpackSettingsManager.BackpackSetting<Boolean> setting) {
 		if (context == Context.PLAYER) {
 			boolean value = !BackpackSettingsManager.getPlayerSettingOrDefault(player, setting);
 			BackpackSettingsManager.setPlayerSetting(player, setting, value);
@@ -84,7 +84,7 @@ public class BackpackSettingsContainer extends SettingsContainerBase<BackpackSet
 	}
 
 	private void sendSettingValueToServer(BackpackSettingsManager.BackpackSetting<Boolean> setting, boolean value) {
-		CompoundNBT data = new CompoundNBT();
+        NBTTagCompound data = new NBTTagCompound();
 		setting.setValue(data, value);
 		sendDataToServer(() -> data);
 	}

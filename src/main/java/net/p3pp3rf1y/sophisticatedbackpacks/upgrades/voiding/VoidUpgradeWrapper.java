@@ -1,10 +1,13 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.voiding;
 
-import net.minecraft.entity.LivingEntity;
+//import net.minecraft.entity.LivingEntity;
+import com.gtnewhorizons.angelica.api.BlockPos;
+import net.MUI2.future.IItemHandler;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+//import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandler;
+//import net.minecraftforge.items.IItemHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IInsertResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IOverflowResponseUpgrade;
@@ -43,26 +46,26 @@ public class VoidUpgradeWrapper extends UpgradeWrapperBase<VoidUpgradeWrapper, V
 			if (shouldVoidOverflow && !simulate) {
 				backpackWrapper.getInventoryForUpgradeProcessing().insertItem(stack, false);
 			}
-			return ItemStack.EMPTY;
+			return null ;
 		}
 		return stack;
 	}
 
 	@Override
 	public ItemStack onBeforeInsert(IItemHandlerSimpleInserter inventoryHandler, int slot, ItemStack stack, boolean simulate) {
-		if (shouldVoidOverflow && inventoryHandler.getStackInSlot(slot).isEmpty() && (!filterLogic.shouldMatchNbt() || !filterLogic.shouldMatchDurability() || filterLogic.getPrimaryMatch() != PrimaryMatch.ITEM) && filterLogic.matchesFilter(stack)) {
+		if (shouldVoidOverflow && inventoryHandler.getStackInSlot(slot)== null  && (!filterLogic.shouldMatchNbt() || !filterLogic.shouldMatchDurability() || filterLogic.getPrimaryMatch() != PrimaryMatch.ITEM) && filterLogic.matchesFilter(stack)) {
 			for (int s = 0; s < inventoryHandler.getSlots(); s++) {
 				if (s == slot) {
 					continue;
 				}
 				if (stackMatchesFilterStack(inventoryHandler.getStackInSlot(s), stack)) {
-					return ItemStack.EMPTY;
+					return null ;
 				}
 			}
 			return stack;
 		}
 
-		return !shouldVoidOverflow && filterLogic.matchesFilter(stack) ? ItemStack.EMPTY : stack;
+		return !shouldVoidOverflow && filterLogic.matchesFilter(stack) ? null : stack;
 	}
 
 	@Override
@@ -107,14 +110,14 @@ public class VoidUpgradeWrapper extends UpgradeWrapperBase<VoidUpgradeWrapper, V
 	}
 
 	@Override
-	public void tick(@Nullable LivingEntity entity, World world, BlockPos pos) {
+	public void tick(@Nullable EntityLiving entity, World world, BlockPos pos) {
 		if (slotsToVoid.isEmpty()) {
 			return;
 		}
 
 		BackpackInventoryHandler backpackInventory = backpackWrapper.getInventoryHandler();
 		for (int slot : slotsToVoid) {
-			backpackInventory.extractItem(slot, backpackInventory.getStackInSlot(slot).getCount(), false);
+			backpackInventory.extractItem(slot, backpackInventory.getStackInSlot(slot).stackSize, false);
 		}
 
 		slotsToVoid.clear();
@@ -127,7 +130,7 @@ public class VoidUpgradeWrapper extends UpgradeWrapperBase<VoidUpgradeWrapper, V
 
 	@Override
 	public ItemStack onOverflow(ItemStack stack) {
-		return filterLogic.matchesFilter(stack) ? ItemStack.EMPTY : stack;
+		return filterLogic.matchesFilter(stack) ? null : stack;
 	}
 
 	@Override

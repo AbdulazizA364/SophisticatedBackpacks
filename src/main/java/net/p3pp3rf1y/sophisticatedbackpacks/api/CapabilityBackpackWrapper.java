@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.api;
 
-import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -32,12 +32,12 @@ public class CapabilityBackpackWrapper {
 
 		@Nullable
 		@Override
-		public INBT writeNBT(Capability<IBackpackWrapper> capability, IBackpackWrapper instance, Direction side) {
+		public NBTBase writeNBT(Capability<IBackpackWrapper> capability, IBackpackWrapper instance, Direction side) {
 			return null;
 		}
 
 		@Override
-		public void readNBT(Capability<IBackpackWrapper> capability, IBackpackWrapper instance, Direction side, INBT nbt) {
+		public void readNBT(Capability<IBackpackWrapper> capability, IBackpackWrapper instance, Direction side, NBTBase nbt) {
 			//noop
 		}
 	}

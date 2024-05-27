@@ -1,8 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.settings.backpack;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+//import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.ITextComponent;
+//import net.minecraft.util.text.ITextComponent;
+
+import net.minecraft.util.ChatComponentText;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.controls.ButtonBase;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.utils.Dimension;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.utils.GuiHelper;
@@ -23,10 +25,10 @@ public class ContextButton extends ButtonBase {
 	public static final TextureBlitData MIDDLE_BUTTON_BACKGROUND = new TextureBlitData(GUI_CONTROLS, new UV(31, 0), new Dimension(14, 18));
 	public static final TextureBlitData RIGHT_BUTTON_HOVERED_BACKGROUND = new TextureBlitData(GUI_CONTROLS, new UV(49, 0), new Dimension(16, 18));
 	public static final TextureBlitData RIGHT_BUTTON_BACKGROUND = new TextureBlitData(GUI_CONTROLS, new UV(31, 0), new Dimension(16, 18));
-	private final Supplier<ITextComponent> getTitle;
-	private final Supplier<List<ITextComponent>> getTooltipKey;
+	private final Supplier<ChatComponentText> getTitle;
+	private final Supplier<List<ChatComponentText>> getTooltipKey;
 
-	protected ContextButton(Position position, IntConsumer onClick, Supplier<ITextComponent> getTitle, Supplier<List<ITextComponent>> getTooltipKey) {
+	protected ContextButton(Position position, IntConsumer onClick, Supplier<ChatComponentText> getTitle, Supplier<List<ChatComponentText>> getTooltipKey) {
 		super(position, new Dimension(62, 18), onClick);
 		this.getTitle = getTitle;
 		this.getTooltipKey = getTooltipKey;

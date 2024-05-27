@@ -1,7 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.settings.nosort;
 
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.p3pp3rf1y.sophisticatedbackpacks.polyfill.mc.util.DyeColor;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.ISettingsCategory;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.ISlotColorCategory;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.NBTHelper;
@@ -15,12 +16,12 @@ public class NoSortSettingsCategory implements ISettingsCategory, ISlotColorCate
 	public static final String NAME = "no_sort";
 	private static final String COLOR_TAG = "color";
 	private static final String SELECTED_SLOTS_TAG = "selectedSlots";
-	private CompoundNBT categoryNbt;
-	private final Consumer<CompoundNBT> saveNbt;
+	private NBTTagCompound categoryNbt;
+	private final Consumer<NBTTagCompound> saveNbt;
 	private final Set<Integer> selectedSlots = new HashSet<>();
 	private DyeColor color = DyeColor.LIME;
 
-	public NoSortSettingsCategory(CompoundNBT categoryNbt, Consumer<CompoundNBT> saveNbt) {
+	public NoSortSettingsCategory(NBTTagCompound categoryNbt, Consumer<NBTTagCompound> saveNbt) {
 		this.categoryNbt = categoryNbt;
 		this.saveNbt = saveNbt;
 
@@ -31,7 +32,7 @@ public class NoSortSettingsCategory implements ISettingsCategory, ISlotColorCate
 		for (int slotNumber : categoryNbt.getIntArray(SELECTED_SLOTS_TAG)) {
 			selectedSlots.add(slotNumber);
 		}
-		NBTHelper.getInt(categoryNbt, COLOR_TAG).ifPresent(c -> color = DyeColor.byId(c));
+		NBTHelper.getInt(categoryNbt, COLOR_TAG).ifPresent(c -> color = DyeColor.fromIndex(c));
 	}
 
 	public boolean isSlotSelected(int slotNumber) {
@@ -72,13 +73,13 @@ public class NoSortSettingsCategory implements ISettingsCategory, ISlotColorCate
 		for (int slotNumber : selectedSlots) {
 			slots[i++] = slotNumber;
 		}
-		categoryNbt.putIntArray(SELECTED_SLOTS_TAG, slots);
+		categoryNbt.setIntArray(SELECTED_SLOTS_TAG, slots);
 		saveNbt.accept(categoryNbt);
 	}
 
 	public void setColor(DyeColor color) {
 		this.color = color;
-		categoryNbt.putInt(COLOR_TAG, color.getId());
+		categoryNbt.setInteger(COLOR_TAG, color.getColor());
 		saveNbt.accept(categoryNbt);
 	}
 
@@ -88,7 +89,7 @@ public class NoSortSettingsCategory implements ISettingsCategory, ISlotColorCate
 
 	@Override
 	public Optional<Integer> getSlotColor(int slotNumber) {
-		return selectedSlots.contains(slotNumber) ? Optional.of(color.getColorValue()) : Optional.empty();
+		return selectedSlots.contains(slotNumber) ? Optional.of(color.getColor()) : Optional.empty();
 	}
 
 	public Set<Integer> getNoSortSlots() {
@@ -96,7 +97,7 @@ public class NoSortSettingsCategory implements ISettingsCategory, ISlotColorCate
 	}
 
 	@Override
-	public void reloadFrom(CompoundNBT categoryNbt) {
+	public void reloadFrom(NBTTagCompound categoryNbt) {
 		this.categoryNbt = categoryNbt;
 		selectedSlots.clear();
 		color = DyeColor.LIME;

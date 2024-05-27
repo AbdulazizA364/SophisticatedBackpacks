@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common.gui;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTTagCompound;
 
 public interface ISyncedContainer {
-	void handleMessage(CompoundNBT data);
+	void handleMessage(NBTTagCompound data);
 }

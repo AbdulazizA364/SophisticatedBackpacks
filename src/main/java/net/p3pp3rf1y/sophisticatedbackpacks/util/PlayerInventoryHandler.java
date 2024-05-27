@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.util;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 import java.util.Collections;
@@ -23,11 +23,11 @@ public class PlayerInventoryHandler {
 		this.ownRenderer = ownRenderer;
 	}
 
-	public int getSlotCount(PlayerEntity player, String identifier) {
+	public int getSlotCount(EntityPlayer player, String identifier) {
 		return slotCountGetter.getSlotCount(player, identifier);
 	}
 
-	public ItemStack getStackInSlot(PlayerEntity player, String identifier, int slot) {
+	public ItemStack getStackInSlot(EntityPlayer player, String identifier, int slot) {
 		return slotStackGetter.getStackInSlot(player, identifier, slot);
 	}
 
@@ -44,14 +44,14 @@ public class PlayerInventoryHandler {
 	}
 
 	public interface IStackInSlotModifier {
-		void accept(PlayerEntity player, int slot, ItemStack stack);
+		void accept(EntityPlayer player, int slot, ItemStack stack);
 	}
 
 	public interface SlotCountGetter {
-		int getSlotCount(PlayerEntity player, String identifier);
+		int getSlotCount(EntityPlayer player, String identifier);
 	}
 
 	public interface SlotStackGetter {
-		ItemStack getStackInSlot(PlayerEntity player, String identifier, int slot);
+		ItemStack getStackInSlot(EntityPlayer player, String identifier, int slot);
 	}
 }

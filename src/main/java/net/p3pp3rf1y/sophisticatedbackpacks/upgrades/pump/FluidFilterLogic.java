@@ -3,7 +3,7 @@ package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.pump;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.NonNullList;
@@ -32,7 +32,7 @@ public class FluidFilterLogic {
 	private void deserializeFluidFilters() {
 		NBTHelper.getTagValue(upgrade, "", "fluids", (c, n1) -> c.getList(n1, Constants.NBT.TAG_STRING)).ifPresent(listNbt -> {
 			int i = 0;
-			for (INBT elementNbt : listNbt) {
+			for (NBTBase elementNbt : listNbt) {
 				Fluid value = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(elementNbt.getAsString()));
 				if (value != null) {
 					fluidFilters.set(i, value);

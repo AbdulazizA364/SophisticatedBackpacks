@@ -1,10 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.Slot;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.IFilterSlot;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.NBTHelper;
@@ -73,7 +73,7 @@ public class FilterLogicContainerBase<T extends FilterLogicBase, S extends Slot>
 	public void addSelectedTag() {
 		getTagAtIndex(tagsToAdd, selectedTagToAdd).ifPresent(tagName -> {
 			addTagName(tagName);
-			serverUpdater.sendDataToServer(() -> NBTHelper.putString(new CompoundNBT(), DATA_ADD_TAG_NAME, tagName.toString()));
+			serverUpdater.sendDataToServer(() -> NBTHelper.putString(new NBTTagCompound(), DATA_ADD_TAG_NAME, tagName.toString()));
 			selectedTagToRemove = 0;
 			tagsToAdd.remove(tagName);
 			selectedTagToAdd = Math.max(0, selectedTagToAdd - 1);
@@ -87,7 +87,7 @@ public class FilterLogicContainerBase<T extends FilterLogicBase, S extends Slot>
 	public void removeSelectedTag() {
 		getTagAtIndex(getTagNames(), selectedTagToRemove).ifPresent(tagName -> {
 			removeSelectedTag(tagName);
-			serverUpdater.sendDataToServer(() -> NBTHelper.putString(new CompoundNBT(), DATA_REMOVE_TAG_NAME, tagName.toString()));
+			serverUpdater.sendDataToServer(() -> NBTHelper.putString(new NBTTagCompound(), DATA_REMOVE_TAG_NAME, tagName.toString()));
 			if (tagSelectionSlot.getItem().getItem().getTags().contains(tagName)) {
 				tagsToAdd.add(tagName);
 			}
@@ -171,7 +171,7 @@ public class FilterLogicContainerBase<T extends FilterLogicBase, S extends Slot>
 
 	public void setPrimaryMatch(PrimaryMatch primaryMatch) {
 		filterLogic.get().setPrimaryMatch(primaryMatch);
-		serverUpdater.sendDataToServer(() -> NBTHelper.putEnumConstant(new CompoundNBT(), DATA_PRIMARY_MATCH, primaryMatch));
+		serverUpdater.sendDataToServer(() -> NBTHelper.putEnumConstant(new NBTTagCompound(), DATA_PRIMARY_MATCH, primaryMatch));
 	}
 
 	public void setMatchAnyTag(boolean matchAnyTag) {
@@ -179,7 +179,7 @@ public class FilterLogicContainerBase<T extends FilterLogicBase, S extends Slot>
 		serverUpdater.sendBooleanToServer(DATA_MATCH_ANY_TAG, matchAnyTag);
 	}
 
-	public boolean handleMessage(CompoundNBT data) {
+	public boolean handleMessage(NBTTagCompound data) {
 		for (String key : data.getAllKeys()) {
 			switch (key) {
 				case DATA_IS_ALLOW_LIST:
@@ -227,7 +227,7 @@ public class FilterLogicContainerBase<T extends FilterLogicBase, S extends Slot>
 		}
 
 		@Override
-		public boolean mayPickup(PlayerEntity pPlayer) {
+		public boolean mayPickup(EntityPlayer pPlayer) {
 			return false;
 		}
 

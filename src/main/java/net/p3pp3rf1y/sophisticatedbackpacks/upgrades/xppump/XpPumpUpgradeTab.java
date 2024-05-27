@@ -2,13 +2,13 @@ package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.xppump;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.matrix.MatrixStack;
+//import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+//import net.minecraft.item.DyeColor;
+//import net.minecraft.util.text.ITextComponent;
+//import net.minecraft.util.text.StringTextComponent;
+//import net.minecraft.util.text.TextFormatting;
+//import net.minecraft.util.text.TranslationTextComponent;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackScreen;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.UpgradeSettingsTab;
@@ -139,9 +139,9 @@ public class XpPumpUpgradeTab extends UpgradeSettingsTab<XpPumpUpgradeContainer>
 		protected void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 			String text = getText.get();
 			ITextComponent fullText = new TranslationTextComponent(translUpgradeControl("xp_level_select"), new StringTextComponent(text).withStyle(TextFormatting.WHITE)).withStyle(TextFormatting.GRAY);
-			int xOffset = (getWidth() - minecraft.font.width(fullText)) / 2;
-			int yOffset = (int) Math.ceil((getHeight() - minecraft.font.lineHeight) / 2d);
-			minecraft.font.draw(matrixStack, fullText, (float) x + xOffset, (float) y + yOffset, DyeColor.BLACK.getTextColor());
+			int xOffset = (getWidth() - minecraft.fontRenderer.width(fullText)) / 2;
+			int yOffset = (int) Math.ceil((getHeight() - minecraft.fontRenderer.lineHeight) / 2d);
+			minecraft.fontRenderer.drawString(matrixStack, fullText, (float) x + xOffset, (float) y + yOffset, DyeColor.BLACK.getTextColor());
 
 			if (isMouseOver(mouseX, mouseY)) {
 				GuiHelper.setTooltipToRender(TOOLTIP);

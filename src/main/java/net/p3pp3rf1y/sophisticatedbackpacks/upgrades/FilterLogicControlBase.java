@@ -1,13 +1,13 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.gtnewhorizons.angelica.compat.toremove.MatrixStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.inventory.container.Slot;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextProperties;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+//import net.minecraft.util.text.ITextProperties;
+//import net.minecraft.util.text.StringTextComponent;
+//import net.minecraft.util.text.TextFormatting;
+//import net.minecraft.util.text.TranslationTextComponent;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackScreen;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.controls.BackpackWidget;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.controls.Button;

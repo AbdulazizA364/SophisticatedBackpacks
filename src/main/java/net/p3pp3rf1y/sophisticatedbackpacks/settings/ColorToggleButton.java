@@ -1,18 +1,20 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.settings;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+//import com.mojang.blaze3d.matrix.MatrixStack;
+//import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.text.ITextProperties;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+//import net.minecraft.item.DyeColor;
+//import net.minecraft.util.text.ITextProperties;
+//import net.minecraft.util.text.TextFormatting;
+//import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.EnumChatFormatting;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.controls.ButtonBase;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.utils.Dimension;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.utils.GuiHelper;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.utils.Position;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.utils.TranslationHelper;
+import net.p3pp3rf1y.sophisticatedbackpacks.polyfill.mc.util.DyeColor;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -23,7 +25,7 @@ import static net.p3pp3rf1y.sophisticatedbackpacks.client.gui.utils.GuiHelper.DE
 
 public class ColorToggleButton extends ButtonBase {
 	private static final DyeColor[] DYE_VALUES = DyeColor.values();
-	private static final List<ITextProperties> TOOLTIP = new ImmutableList.Builder<ITextProperties>()
+	private static final List<EnumChatFormatting> TOOLTIP = new ImmutableList.Builder<EnumChatFormatting>()
 			.add(new TranslationTextComponent(TranslationHelper.translSettingsButton("toggle_color")))
 			.addAll(TranslationHelper.getTranslatedLines(TranslationHelper.translSettingsButton("toggle_color_detail"), null, TextFormatting.GRAY))
 			.build();

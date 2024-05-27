@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.server.MinecraftServer;
@@ -54,17 +54,17 @@ public class BackpackStorage extends WorldSavedData {
 	}
 
 	private void readAccessLogs(CompoundNBT nbt) {
-		for (INBT n : nbt.getList("accessLogRecords", Constants.NBT.TAG_COMPOUND)) {
+		for (NBTBase n : nbt.getList("accessLogRecords", Constants.NBT.TAG_COMPOUND)) {
 			AccessLogRecord alr = AccessLogRecord.deserializeFromNBT((CompoundNBT) n);
 			accessLogRecords.put(alr.getBackpackUuid(), alr);
 		}
 	}
 
 	private void readBackpackContents(CompoundNBT nbt) {
-		for (INBT n : nbt.getList("backpackContents", Constants.NBT.TAG_COMPOUND)) {
+		for (NBTBase n : nbt.getList("backpackContents", Constants.NBT.TAG_COMPOUND)) {
 			CompoundNBT uuidContentsPair = (CompoundNBT) n;
 			UUID uuid = NBTUtil.loadUUID(Objects.requireNonNull(uuidContentsPair.get("uuid")));
-			CompoundNBT contents = uuidContentsPair.getCompound("contents");
+			CompoundNBT contents = uuidContentsPair.getCompoundTag("contents");
 			backpackContents.put(uuid, contents);
 		}
 	}

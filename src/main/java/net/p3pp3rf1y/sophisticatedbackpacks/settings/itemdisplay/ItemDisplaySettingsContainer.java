@@ -1,9 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.settings.itemdisplay;
 
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
+
+import net.minecraft.nbt.NBTTagCompound;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.SettingsContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.SettingsContainerBase;
+import net.p3pp3rf1y.sophisticatedbackpacks.polyfill.mc.util.DyeColor;
 
 import java.util.Optional;
 
@@ -20,8 +21,8 @@ public class ItemDisplaySettingsContainer extends SettingsContainerBase<ItemDisp
 	}
 
 	@Override
-	public void handleMessage(CompoundNBT data) {
-		if (data.contains(ACTION_TAG)) {
+	public void handleMessage(NBTTagCompound data) {
+		if (data.hasKey (ACTION_TAG)) {
 			switch (data.getString(ACTION_TAG)) {
 				case UNSELECT_SLOT_ACTION:
 					unselectSlot();
@@ -34,10 +35,10 @@ public class ItemDisplaySettingsContainer extends SettingsContainerBase<ItemDisp
 					break;
 				default:
 			}
-		} else if (data.contains(SELECT_SLOT_TAG)) {
-			selectSlot(data.getInt(SELECT_SLOT_TAG));
-		} else if (data.contains(COLOR_TAG)) {
-			setColor(DyeColor.byId(data.getInt(COLOR_TAG)));
+		} else if (data.hasKey (SELECT_SLOT_TAG)) {
+			selectSlot(data.getInteger(SELECT_SLOT_TAG));
+		} else if (data.hasKey (COLOR_TAG)) {
+			setColor(DyeColor.fromIndex(data.getInteger(COLOR_TAG)));
 		}
 	}
 
@@ -87,7 +88,7 @@ public class ItemDisplaySettingsContainer extends SettingsContainerBase<ItemDisp
 		if (isServer()) {
 			getCategory().setColor(color);
 		} else {
-			sendIntToServer(COLOR_TAG, color.getId());
+			sendIntToServer(COLOR_TAG, color.getColor());
 		}
 	}
 

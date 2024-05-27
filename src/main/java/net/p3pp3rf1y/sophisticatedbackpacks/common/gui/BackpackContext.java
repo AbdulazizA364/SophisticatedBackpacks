@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common.gui;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -24,11 +24,11 @@ import java.util.Map;
 import java.util.Optional;
 
 public abstract class BackpackContext {
-	public abstract Optional<IBackpackWrapper> getParentBackpackWrapper(PlayerEntity player);
+	public abstract Optional<IBackpackWrapper> getParentBackpackWrapper(EntityPlayer player);
 
-	public abstract boolean shouldLockBackpackSlot(PlayerEntity player);
+	public abstract boolean shouldLockBackpackSlot(EntityPlayer player);
 
-	public abstract IBackpackWrapper getBackpackWrapper(PlayerEntity player);
+	public abstract IBackpackWrapper getBackpackWrapper(EntityPlayer player);
 
 	public abstract int getBackpackSlotIndex();
 
@@ -45,17 +45,17 @@ public abstract class BackpackContext {
 
 	public abstract void addToBuffer(PacketBuffer packetBuffer);
 
-	public abstract boolean canInteractWith(PlayerEntity player);
+	public abstract boolean canInteractWith(EntityPlayer player);
 
-	public BlockPos getBackpackPosition(PlayerEntity playerEntity) {
+	public BlockPos getBackpackPosition(EntityPlayer playerEntity) {
 		return playerEntity.blockPosition();
 	}
 
-	public ITextComponent getDisplayName(PlayerEntity player) {
+	public ITextComponent getDisplayName(EntityPlayer player) {
 		return getBackpackWrapper(player).getBackpack().getHoverName();
 	}
 
-	public abstract void onUpgradeChanged(PlayerEntity player);
+	public abstract void onUpgradeChanged(EntityPlayer player);
 
 	public static BackpackContext fromBuffer(PacketBuffer buffer) {
 		ContextType type = ContextType.fromBuffer(buffer);
@@ -139,17 +139,17 @@ public abstract class BackpackContext {
 		}
 
 		@Override
-		public Optional<IBackpackWrapper> getParentBackpackWrapper(PlayerEntity player) {
+		public Optional<IBackpackWrapper> getParentBackpackWrapper(EntityPlayer player) {
 			return Optional.empty();
 		}
 
 		@Override
-		public boolean shouldLockBackpackSlot(PlayerEntity player) {
+		public boolean shouldLockBackpackSlot(EntityPlayer player) {
 			return SophisticatedBackpacks.PROXY.getPlayerInventoryProvider().getPlayerInventoryHandler(handlerName).map(PlayerInventoryHandler::isVisibleInGui).orElse(false);
 		}
 
 		@Override
-		public IBackpackWrapper getBackpackWrapper(PlayerEntity player) {
+		public IBackpackWrapper getBackpackWrapper(EntityPlayer player) {
 			Optional<PlayerInventoryHandler> inventoryHandler = SophisticatedBackpacks.PROXY.getPlayerInventoryProvider().getPlayerInventoryHandler(handlerName);
 			if (!inventoryHandler.isPresent()) {
 				SophisticatedBackpacks.LOGGER.error("Error getting backpack wrapper - Unable to find inventory handler for \"{}\"", handlerName);
@@ -164,7 +164,7 @@ public abstract class BackpackContext {
 		}
 
 		@Override
-		public void onUpgradeChanged(PlayerEntity player) {
+		public void onUpgradeChanged(EntityPlayer player) {
 			if (!player.level.isClientSide && handlerName.equals(PlayerInventoryProvider.MAIN_INVENTORY)) {
 				IBackpackWrapper backpackWrapper = getBackpackWrapper(player);
 				PacketHandler.sendToClient((ServerPlayerEntity) player, new SyncClientInfoMessage(backpackSlotIndex, backpackWrapper.getRenderInfo().getNbt(), backpackWrapper.getColumnsTaken()));
@@ -204,7 +204,7 @@ public abstract class BackpackContext {
 		}
 
 		@Override
-		public boolean canInteractWith(PlayerEntity player) {
+		public boolean canInteractWith(EntityPlayer player) {
 			return true;
 		}
 	}
@@ -220,7 +220,7 @@ public abstract class BackpackContext {
 		}
 
 		@Override
-		public Optional<IBackpackWrapper> getParentBackpackWrapper(PlayerEntity player) {
+		public Optional<IBackpackWrapper> getParentBackpackWrapper(EntityPlayer player) {
 			if (parentWrapper == null) {
 				parentWrapper = super.getBackpackWrapper(player);
 			}
@@ -228,7 +228,7 @@ public abstract class BackpackContext {
 		}
 
 		@Override
-		public IBackpackWrapper getBackpackWrapper(PlayerEntity player) {
+		public IBackpackWrapper getBackpackWrapper(EntityPlayer player) {
 			return getParentBackpackWrapper(player).map(parent -> parent.getInventoryHandler().getStackInSlot(subBackpackSlotIndex).getCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 					.orElse(NoopBackpackWrapper.INSTANCE)).orElse(NoopBackpackWrapper.INSTANCE);
 		}
@@ -254,7 +254,7 @@ public abstract class BackpackContext {
 		}
 
 		@Override
-		public ITextComponent getDisplayName(PlayerEntity player) {
+		public ITextComponent getDisplayName(EntityPlayer player) {
 			return new StringTextComponent("... > " + super.getDisplayName(player).getString());
 		}
 

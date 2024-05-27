@@ -12,7 +12,7 @@ import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -258,7 +258,7 @@ public class EntityBackpackAdditionHandler {
 		if (event.getEntity().getTags().contains(SPAWNED_WITH_BACKPACK)) {
 			LivingEntity mob = event.getEntityLiving();
 			ItemStack backpack = mob.getItemBySlot(EquipmentSlotType.CHEST);
-			if (event.getSource().getEntity() instanceof PlayerEntity && !(event.getSource().getEntity() instanceof FakePlayer) &&
+			if (event.getSource().getEntity() instanceof EntityPlayer && !(event.getSource().getEntity() instanceof FakePlayer) &&
 					Math.max(mob.level.random.nextFloat() - event.getLootingLevel() * Config.COMMON.entityBackpackAdditions.lootingChanceIncreasePerLevel.get(), 0.0F) < Config.COMMON.entityBackpackAdditions.backpackDropChance.get()) {
 				ItemEntity backpackEntity = new ItemEntity(mob.level, mob.getX(), mob.getY(), mob.getZ(), backpack);
 				event.getDrops().add(backpackEntity);

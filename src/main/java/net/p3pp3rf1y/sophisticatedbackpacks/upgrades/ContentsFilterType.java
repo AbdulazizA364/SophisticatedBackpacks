@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.util.IStringSerializable;
+import net.p3pp3rf1y.sophisticatedbackpacks.polyfill.mc.util.IStringSerializable;
 
 import java.util.Map;
 
@@ -17,7 +17,7 @@ public enum ContentsFilterType implements IStringSerializable {
 	}
 
 	@Override
-	public String getSerializedName() {
+	public String getName() {
 		return name;
 	}
 
@@ -31,7 +31,7 @@ public enum ContentsFilterType implements IStringSerializable {
 	static {
 		ImmutableMap.Builder<String, ContentsFilterType> builder = new ImmutableMap.Builder<>();
 		for (ContentsFilterType value : values()) {
-			builder.put(value.getSerializedName(), value);
+			builder.put(value.getName(), value);
 		}
 		NAME_VALUES = builder.build();
 		VALUES = values();
@@ -40,4 +40,5 @@ public enum ContentsFilterType implements IStringSerializable {
 	public static ContentsFilterType fromName(String name) {
 		return NAME_VALUES.getOrDefault(name, BLOCK);
 	}
+
 }

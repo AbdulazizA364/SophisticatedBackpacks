@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common.gui;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.ClickType;
@@ -53,7 +53,7 @@ public class SettingsContainer extends Container implements IContextAwareContain
 		SETTINGS_CONTAINER_FACTORIES = builder.build();
 	}
 
-	private final PlayerEntity player;
+	private final EntityPlayer player;
 	private final BackpackContext backpackContext;
 	private final IBackpackWrapper backpackWrapper;
 	private final BackpackBackgroundProperties backpackBackgroundProperties;
@@ -63,7 +63,7 @@ public class SettingsContainer extends Container implements IContextAwareContain
 	public final List<Slot> ghostSlots = new ArrayList<>();
 	private CompoundNBT lastSettingsNbt = null;
 
-	protected SettingsContainer(int windowId, PlayerEntity player, BackpackContext backpackContext) {
+	protected SettingsContainer(int windowId, EntityPlayer player, BackpackContext backpackContext) {
 		super(SETTINGS_CONTAINER_TYPE.get(), windowId);
 		this.player = player;
 		this.backpackContext = backpackContext;
@@ -183,7 +183,7 @@ public class SettingsContainer extends Container implements IContextAwareContain
 	}
 
 	@Override
-	public boolean stillValid(PlayerEntity player) {
+	public boolean stillValid(EntityPlayer player) {
 		return true;
 	}
 
@@ -207,7 +207,7 @@ public class SettingsContainer extends Container implements IContextAwareContain
 	}
 
 	@Override
-	public ItemStack clicked(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
+	public ItemStack clicked(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
 		return ItemStack.EMPTY;
 	}
 
@@ -225,7 +225,7 @@ public class SettingsContainer extends Container implements IContextAwareContain
 
 
 
-	public PlayerEntity getPlayer() {
+	public EntityPlayer getPlayer() {
 		return player;
 	}
 
@@ -235,7 +235,7 @@ public class SettingsContainer extends Container implements IContextAwareContain
 		}
 
 		@Override
-		public boolean mayPickup(PlayerEntity playerIn) {
+		public boolean mayPickup(EntityPlayer playerIn) {
 			return false;
 		}
 	}

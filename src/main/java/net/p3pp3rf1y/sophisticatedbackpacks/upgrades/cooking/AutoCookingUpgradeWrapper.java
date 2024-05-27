@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.AbstractCookingRecipe;
 import net.minecraft.item.crafting.BlastingRecipe;
 import net.minecraft.item.crafting.FurnaceRecipe;
-import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.SmokingRecipe;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -38,12 +38,12 @@ public class AutoCookingUpgradeWrapper<W extends AutoCookingUpgradeWrapper<W, U,
 	private final CookingLogic<R> cookingLogic;
 	private final Predicate<ItemStack> isValidInput;
 	private final Predicate<ItemStack> isValidFuel;
-	private final IRecipeType<R> recipeType;
+	private final IRecipe<R> recipeType;
 	private int outputCooldown = 0;
 	private int fuelCooldown = 0;
 	private int inputCooldown = 0;
 
-	public AutoCookingUpgradeWrapper(IBackpackWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler, Config.Common.AutoCookingUpgradeConfig autoCookingConfig, IRecipeType<R> recipeType, float burnTimeModifier) {
+	public AutoCookingUpgradeWrapper(IBackpackWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler, Config.Common.AutoCookingUpgradeConfig autoCookingConfig, IRecipe<R> recipeType, float burnTimeModifier) {
 		super(backpackWrapper, upgrade, upgradeSaveHandler);
 		this.recipeType = recipeType;
 		inputFilterLogic = new FilterLogic(upgrade, upgradeSaveHandler, autoCookingConfig.inputFilterSlots.get(),
@@ -192,19 +192,19 @@ public class AutoCookingUpgradeWrapper<W extends AutoCookingUpgradeWrapper<W, U,
 
 	public static class AutoSmeltingUpgradeWrapper extends AutoCookingUpgradeWrapper<AutoSmeltingUpgradeWrapper, AutoSmeltingUpgradeItem, FurnaceRecipe> {
 		public AutoSmeltingUpgradeWrapper(IBackpackWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
-			super(backpackWrapper, upgrade, upgradeSaveHandler, Config.COMMON.autoSmeltingUpgrade, IRecipeType.SMELTING, 1);
+			super(backpackWrapper, upgrade, upgradeSaveHandler, Config.COMMON.autoSmeltingUpgrade, IRecipe.SMELTING, 1);
 		}
 	}
 
 	public static class AutoSmokingUpgradeWrapper extends AutoCookingUpgradeWrapper<AutoSmokingUpgradeWrapper, AutoSmokingUpgradeItem, SmokingRecipe> {
 		public AutoSmokingUpgradeWrapper(IBackpackWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
-			super(backpackWrapper, upgrade, upgradeSaveHandler, Config.COMMON.autoSmokingUpgrade, IRecipeType.SMOKING, 0.5f);
+			super(backpackWrapper, upgrade, upgradeSaveHandler, Config.COMMON.autoSmokingUpgrade, IRecipe.SMOKING, 0.5f);
 		}
 	}
 
 	public static class AutoBlastingUpgradeWrapper extends AutoCookingUpgradeWrapper<AutoBlastingUpgradeWrapper, AutoBlastingUpgradeItem, BlastingRecipe> {
 		public AutoBlastingUpgradeWrapper(IBackpackWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
-			super(backpackWrapper, upgrade, upgradeSaveHandler, Config.COMMON.autoBlastingUpgrade, IRecipeType.BLASTING, 0.5f);
+			super(backpackWrapper, upgrade, upgradeSaveHandler, Config.COMMON.autoBlastingUpgrade, IRecipe.BLASTING, 0.5f);
 		}
 	}
 }

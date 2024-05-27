@@ -1,11 +1,14 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper;
 
+import net.MUI2.future.ItemHandlerHelper;
+import net.MUI2.future.ItemStackHandler;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
+//import net.minecraft.nbt.CompoundNBT;
+//import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
+//import net.minecraftforge.items.ItemHandlerHelper;
+//import net.minecraftforge.items.ItemStackHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBackpackWrapper;
@@ -30,11 +33,11 @@ public class BackpackInventoryHandler extends ItemStackHandler implements IItemH
 	public static final String INVENTORY_TAG = "inventory";
 	private static final String REAL_COUNT_TAG = "realCount";
 	private final IBackpackWrapper backpackWrapper;
-	private final CompoundNBT contentsNbt;
+	private final NBTTagCompound contentsNbt;
 	private final Runnable backpackSaveHandler;
 	private final List<IntConsumer> onContentsChangedListeners = new ArrayList<>();
 	private boolean persistent = true;
-	private final Map<Integer, CompoundNBT> stackNbts = new LinkedHashMap<>();
+	private final Map<Integer, NBTTagCompound> stackNbts = new LinkedHashMap<>();
 
 	private ISlotTracker slotTracker = new ISlotTracker.Noop();
 
@@ -42,14 +45,14 @@ public class BackpackInventoryHandler extends ItemStackHandler implements IItemH
 	private int maxStackSizeMultiplier;
 	private boolean isInitializing;
 
-	public BackpackInventoryHandler(int numberOfInventorySlots, IBackpackWrapper backpackWrapper, CompoundNBT contentsNbt, Runnable backpackSaveHandler, int slotLimit) {
+	public BackpackInventoryHandler(int numberOfInventorySlots, IBackpackWrapper backpackWrapper, NBTTagCompound contentsNbt, Runnable backpackSaveHandler, int slotLimit) {
 		super(numberOfInventorySlots);
 		isInitializing = true;
 		this.backpackWrapper = backpackWrapper;
 		this.contentsNbt = contentsNbt;
 		this.backpackSaveHandler = backpackSaveHandler;
 		setSlotLimit(slotLimit);
-		deserializeNBT(contentsNbt.getCompound(INVENTORY_TAG));
+		deserializeNBT(contentsNbt.getCompoundTag(INVENTORY_TAG));
 		initStackNbts();
 		isInitializing = false;
 	}
@@ -94,7 +97,7 @@ public class BackpackInventoryHandler extends ItemStackHandler implements IItemH
 				return true;
 			}
 		} else {
-			CompoundNBT itemTag = getSlotsStackNbt(slot, slotStack);
+            NBTTagCompound itemTag = getSlotsStackNbt(slot, slotStack);
 			if (!stackNbts.containsKey(slot) || !stackNbts.get(slot).equals(itemTag)) {
 				stackNbts.put(slot, itemTag);
 				return true;
@@ -103,8 +106,8 @@ public class BackpackInventoryHandler extends ItemStackHandler implements IItemH
 		return false;
 	}
 
-	private CompoundNBT getSlotsStackNbt(int slot, ItemStack slotStack) {
-		CompoundNBT itemTag = new CompoundNBT();
+	private NBTTagCompound getSlotsStackNbt(int slot, ItemStack slotStack) {
+        NBTTagCompound itemTag = new NBTTagCompound();
 		itemTag.putInt("Slot", slot);
 		itemTag.putInt(REAL_COUNT_TAG, slotStack.getCount());
 		slotStack.save(itemTag);
@@ -112,12 +115,12 @@ public class BackpackInventoryHandler extends ItemStackHandler implements IItemH
 	}
 
 	@Override
-	public void deserializeNBT(CompoundNBT nbt) {
+	public void deserializeNBT(NBTTagCompound nbt) {
 		slotTracker.clear();
 		setSize(nbt.contains("Size", Constants.NBT.TAG_INT) ? nbt.getInt("Size") : stacks.size());
 		ListNBT tagList = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < tagList.size(); i++) {
-			CompoundNBT itemTags = tagList.getCompound(i);
+            NBTTagCompound itemTags = tagList.getCompoundTag(i);
 			int slot = itemTags.getInt("Slot");
 
 			if (slot >= 0 && slot < stacks.size()) {
@@ -302,10 +305,10 @@ public class BackpackInventoryHandler extends ItemStackHandler implements IItemH
 	}
 
 	@Override
-	public CompoundNBT serializeNBT() {
+	public NBTTagCompound serializeNBT() {
 		ListNBT nbtTagList = new ListNBT();
 		nbtTagList.addAll(stackNbts.values());
-		CompoundNBT nbt = new CompoundNBT();
+        NBTTagCompound nbt = new NBTTagCompound();
 		nbt.put("Items", nbtTagList);
 		nbt.putInt("Size", getSlots());
 		return nbt;

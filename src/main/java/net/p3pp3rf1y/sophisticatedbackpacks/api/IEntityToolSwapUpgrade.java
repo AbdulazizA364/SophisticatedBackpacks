@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.api;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 /**
@@ -25,5 +25,5 @@ public interface IEntityToolSwapUpgrade {
 	 * @param player Player that pressed the key
 	 * @return true if the keypress was handled by this upgrade and no other {@link IEntityToolSwapUpgrade} upgrades should process their logic
 	 */
-	boolean onEntityInteract(World world, Entity entity, PlayerEntity player);
+	boolean onEntityInteract(World world, Entity entity, EntityPlayer player);
 }

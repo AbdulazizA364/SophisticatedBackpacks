@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.api;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -27,5 +27,5 @@ public interface IBlockToolSwapUpgrade {
 	 * @param player     Player that pressed the key
 	 * @return true if the keypress was handled by this upgrade and no other {@link IBlockToolSwapUpgrade} upgrades should process their logic
 	 */
-	boolean onBlockInteract(World world, BlockPos pos, BlockState blockState, PlayerEntity player);
+	boolean onBlockInteract(World world, BlockPos pos, BlockState blockState, EntityPlayer player);
 }

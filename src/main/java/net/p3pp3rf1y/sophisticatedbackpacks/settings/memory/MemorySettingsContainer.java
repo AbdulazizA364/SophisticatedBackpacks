@@ -1,6 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.settings.memory;
 
-import net.minecraft.nbt.CompoundNBT;
+//import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTTagCompound;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.SettingsContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.SettingsContainerBase;
 
@@ -16,8 +17,8 @@ public class MemorySettingsContainer extends SettingsContainerBase<MemorySetting
 	}
 
 	@Override
-	public void handleMessage(CompoundNBT data) {
-		if (data.contains(ACTION_TAG)) {
+	public void handleMessage(NBTTagCompound data) {
+		if (data.hasKey (ACTION_TAG)) {
 			switch (data.getString(ACTION_TAG)) {
 				case SELECT_ALL_ACTION:
 					selectAllSlots();
@@ -27,10 +28,10 @@ public class MemorySettingsContainer extends SettingsContainerBase<MemorySetting
 					break;
 				default:
 			}
-		} else if (data.contains(SELECT_SLOT_TAG)) {
-			selectSlot(data.getInt(SELECT_SLOT_TAG));
-		} else if (data.contains(UNSELECT_SLOT_TAG)) {
-			unselectSlot(data.getInt(UNSELECT_SLOT_TAG));
+		} else if (data.hasKey (SELECT_SLOT_TAG)) {
+			selectSlot(data.getInteger(SELECT_SLOT_TAG));
+		} else if (data.hasKey (UNSELECT_SLOT_TAG)) {
+			unselectSlot(data.getInteger(UNSELECT_SLOT_TAG));
 		}
 	}
 

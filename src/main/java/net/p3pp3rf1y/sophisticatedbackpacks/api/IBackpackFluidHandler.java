@@ -1,7 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.api;
 
-import net.minecraft.fluid.Fluid;
+//import net.minecraft.fluid.Fluid;
 import net.minecraft.tags.ITag;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 

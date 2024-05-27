@@ -33,7 +33,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.Explosion;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -127,19 +127,19 @@ public class BackpackBlock extends Block implements IWaterLoggable {
 	}
 
 	@Override
-	public float getExplosionResistance(BlockState state, IBlockReader world, BlockPos pos, Explosion explosion) {
+	public float getExplosionResistance(BlockState state, IBlockAccess world, BlockPos pos, Explosion explosion) {
 		if (hasEverlastingUpgrade(world, pos)) {
 			return BEDROCK_RESISTANCE;
 		}
 		return super.getExplosionResistance(state, world, pos, explosion);
 	}
 
-	private boolean hasEverlastingUpgrade(IBlockReader world, BlockPos pos) {
+	private boolean hasEverlastingUpgrade(IBlockAccess world, BlockPos pos) {
 		return WorldHelper.getTile(world, pos, BackpackTileEntity.class).map(te -> !te.getBackpackWrapper().getUpgradeHandler().getTypeWrappers(EverlastingUpgradeItem.TYPE).isEmpty()).orElse(false);
 	}
 
 	@Override
-	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+	public VoxelShape getShape(BlockState state, IBlockAccess worldIn, BlockPos pos, ISelectionContext context) {
 		return BackpackShapes.getShape(state.getValue(FACING), state.getValue(LEFT_TANK), state.getValue(RIGHT_TANK), state.getValue(BATTERY));
 	}
 
@@ -150,7 +150,7 @@ public class BackpackBlock extends Block implements IWaterLoggable {
 
 	@Nullable
 	@Override
-	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+	public TileEntity createTileEntity(BlockState state, IBlockAccess world) {
 		return new BackpackTileEntity();
 	}
 
@@ -256,7 +256,7 @@ public class BackpackBlock extends Block implements IWaterLoggable {
 	}
 
 	@Override
-	public boolean canEntityDestroy(BlockState state, IBlockReader world, BlockPos pos, Entity entity) {
+	public boolean canEntityDestroy(BlockState state, IBlockAccess world, BlockPos pos, Entity entity) {
 		if (hasEverlastingUpgrade(world, pos)) {
 			return false;
 		}

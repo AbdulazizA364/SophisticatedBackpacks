@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.crafting;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
@@ -12,7 +12,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.util.InventoryHelper;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class CraftingItemHandler extends CraftingInventory {
+public class CraftingItemHandler extends InventoryCrafting {
 	private final Supplier<IItemHandlerModifiable> supplyInventory;
 	private final Consumer<IInventory> onCraftingMatrixChanged;
 

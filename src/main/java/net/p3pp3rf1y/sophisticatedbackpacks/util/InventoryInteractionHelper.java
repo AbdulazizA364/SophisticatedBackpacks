@@ -1,13 +1,15 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.util;
 
-import net.minecraft.entity.player.PlayerEntity;
+import com.gtnewhorizons.angelica.api.BlockPos;
+import net.MUI2.future.IItemHandler;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
+//import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+//import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+//import net.minecraftforge.items.CapabilityItemHandler;
+//import net.minecraftforge.items.IItemHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IItemHandlerInteractionUpgrade;
@@ -18,14 +20,14 @@ public class InventoryInteractionHelper {
 	private InventoryInteractionHelper() {}
 
 	public static boolean tryInventoryInteraction(ItemUseContext context) {
-		PlayerEntity player = context.getPlayer();
+		EntityPlayer player = context.getPlayer();
 		if (player == null) {
 			return false;
 		}
 		return tryInventoryInteraction(context.getClickedPos(), context.getLevel(), context.getItemInHand(), context.getClickedFace(), player);
 	}
 
-	public static boolean tryInventoryInteraction(BlockPos pos, World world, ItemStack backpack, Direction face, PlayerEntity player) {
+	public static boolean tryInventoryInteraction(BlockPos pos, World world, ItemStack backpack, Direction face, EntityPlayer player) {
 		return WorldHelper.getTile(world, pos)
 				.map(te -> te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face)
 						.map(itemHandler -> player.level.isClientSide || backpack.getCapability(CapabilityBackpackWrapper.getCapabilityInstance())
@@ -34,7 +36,7 @@ public class InventoryInteractionHelper {
 				).orElse(false);
 	}
 
-	private static boolean tryRunningInteractionWrappers(IItemHandler itemHandler, IBackpackWrapper wrapper, PlayerEntity player) {
+	private static boolean tryRunningInteractionWrappers(IItemHandler itemHandler, IBackpackWrapper wrapper, EntityPlayer player) {
 		List<IItemHandlerInteractionUpgrade> wrappers = wrapper.getUpgradeHandler().getWrappersThatImplement(IItemHandlerInteractionUpgrade.class);
 		if (wrappers.isEmpty()) {
 			return false;

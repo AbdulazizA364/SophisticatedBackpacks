@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.AbstractCookingRecipe;
 import net.minecraft.item.crafting.BlastingRecipe;
 import net.minecraft.item.crafting.FurnaceRecipe;
-import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.SmokingRecipe;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -24,7 +24,7 @@ public abstract class CookingUpgradeWrapper<W extends CookingUpgradeWrapper<W, U
 	private static final int NOTHING_TO_DO_COOLDOWN = 10;
 	protected final CookingLogic<R> cookingLogic;
 
-	protected CookingUpgradeWrapper(IBackpackWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler, Config.Common.CookingUpgradeConfig cookingUpgradeConfig, IRecipeType<R> recipeType, float burnTimeModifier) {
+	protected CookingUpgradeWrapper(IBackpackWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler, Config.Common.CookingUpgradeConfig cookingUpgradeConfig, IRecipe<R> recipeType, float burnTimeModifier) {
 		super(backpackWrapper, upgrade, upgradeSaveHandler);
 		cookingLogic = new CookingLogic<>(upgrade, upgradeSaveHandler, cookingUpgradeConfig, recipeType, burnTimeModifier);
 	}
@@ -74,19 +74,19 @@ public abstract class CookingUpgradeWrapper<W extends CookingUpgradeWrapper<W, U
 
 	public static class SmeltingUpgradeWrapper extends CookingUpgradeWrapper<SmeltingUpgradeWrapper, SmeltingUpgradeItem, FurnaceRecipe> {
 		public SmeltingUpgradeWrapper(IBackpackWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
-			super(backpackWrapper, upgrade, upgradeSaveHandler, Config.COMMON.smeltingUpgrade, IRecipeType.SMELTING, 1);
+			super(backpackWrapper, upgrade, upgradeSaveHandler, Config.COMMON.smeltingUpgrade, IRecipe.SMELTING, 1);
 		}
 	}
 
 	public static class SmokingUpgradeWrapper extends CookingUpgradeWrapper<SmokingUpgradeWrapper, SmokingUpgradeItem, SmokingRecipe> {
 		public SmokingUpgradeWrapper(IBackpackWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
-			super(backpackWrapper, upgrade, upgradeSaveHandler, Config.COMMON.smokingUpgrade, IRecipeType.SMOKING, 0.5f);
+			super(backpackWrapper, upgrade, upgradeSaveHandler, Config.COMMON.smokingUpgrade, IRecipe.SMOKING, 0.5f);
 		}
 	}
 
 	public static class BlastingUpgradeWrapper extends CookingUpgradeWrapper<BlastingUpgradeWrapper, BlastingUpgradeItem, BlastingRecipe> {
 		public BlastingUpgradeWrapper(IBackpackWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
-			super(backpackWrapper, upgrade, upgradeSaveHandler, Config.COMMON.blastingUpgrade, IRecipeType.BLASTING, 0.5f);
+			super(backpackWrapper, upgrade, upgradeSaveHandler, Config.COMMON.blastingUpgrade, IRecipe.BLASTING, 0.5f);
 		}
 	}
 }

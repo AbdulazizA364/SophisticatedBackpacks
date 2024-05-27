@@ -1,7 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.xppump;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.util.IStringSerializable;
+import net.p3pp3rf1y.sophisticatedbackpacks.polyfill.mc.util.IStringSerializable;
+//import net.minecraft.util.IStringSerializable;
 
 import java.util.Map;
 
@@ -15,7 +16,7 @@ public enum AutomationDirection implements IStringSerializable {
 	AutomationDirection(String name) {this.name = name;}
 
 	@Override
-	public String getSerializedName() {
+	public String getName () {
 		return name;
 	}
 
@@ -29,7 +30,7 @@ public enum AutomationDirection implements IStringSerializable {
 	static {
 		ImmutableMap.Builder<String, AutomationDirection> builder = new ImmutableMap.Builder<>();
 		for (AutomationDirection value : AutomationDirection.values()) {
-			builder.put(value.getSerializedName(), value);
+			builder.put(value.getName(), value);
 		}
 		NAME_VALUES = builder.build();
 		VALUES = values();

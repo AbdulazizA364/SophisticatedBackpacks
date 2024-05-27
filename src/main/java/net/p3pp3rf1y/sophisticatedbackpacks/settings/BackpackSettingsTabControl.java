@@ -1,9 +1,11 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.settings;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.matrix.MatrixStack;
+//import com.mojang.blaze3d.matrix.MatrixStack;
+import com.gtnewhorizons.angelica.compat.toremove.MatrixStack;
 import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.inventory.container.Slot;
+//import net.minecraft.inventory.container.Slot;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SettingsScreen;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SettingsTabControl;

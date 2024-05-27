@@ -1,12 +1,15 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.util;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.UUIDCodec;
+//import net.minecraft.util.IStringSerializable;
+//import net.minecraft.util.UUIDCodec;
+import com.mojang.util.UUIDTypeAdapter;
+import net.minecraftforge.common.util.Constants;
+import net.p3pp3rf1y.sophisticatedbackpacks.polyfill.mc.util.IStringSerializable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,65 +24,65 @@ public class NBTHelper {
 	private NBTHelper() {}
 
 	public static Optional<Integer> getInt(ItemStack stack, String key) {
-		return getTagValue(stack, key, CompoundNBT::getInt);
+		return getTagValue(stack, key, NBTTagCompound::getInteger);
 	}
 
-	public static Optional<Integer> getInt(CompoundNBT tag, String key) {
-		return getTagValue(tag, key, CompoundNBT::getInt);
+	public static Optional<Integer> getInt(NBTTagCompound tag, String key) {
+		return getTagValue(tag, key, NBTTagCompound::getInteger);
 	}
 
-	private static <T> Optional<T> getTagValue(ItemStack stack, String key, BiFunction<CompoundNBT, String, T> getValue) {
+	private static <T> Optional<T> getTagValue(ItemStack stack, String key, BiFunction<NBTTagCompound, String, T> getValue) {
 		return getTagValue(stack, "", key, getValue);
 	}
 
-	public static <T> Optional<T> getTagValue(ItemStack stack, String parentKey, String key, BiFunction<CompoundNBT, String, T> getValue) {
-		CompoundNBT tag = stack.getTag();
+	public static <T> Optional<T> getTagValue(ItemStack stack, String parentKey, String key, BiFunction<NBTTagCompound, String, T> getValue) {
+		NBTTagCompound tag = stack.getTagCompound();
 
 		if (tag == null) {
 			return Optional.empty();
 		}
 
 		if (!parentKey.isEmpty()) {
-			INBT parentTag = tag.get(parentKey);
-			if (!(parentTag instanceof CompoundNBT)) {
+			NBTBase parentTag = tag.getTag(parentKey);
+			if (!(parentTag instanceof NBTTagCompound)) {
 				return Optional.empty();
 			}
-			tag = (CompoundNBT) parentTag;
+			tag = (NBTTagCompound) parentTag;
 		}
 
 		return getTagValue(tag, key, getValue);
 	}
 
-	public static Optional<Boolean> getBoolean(CompoundNBT tag, String key) {
-		return getTagValue(tag, key, CompoundNBT::getBoolean);
+	public static Optional<Boolean> getBoolean(NBTTagCompound tag, String key) {
+		return getTagValue(tag, key, NBTTagCompound::getBoolean);
 	}
 
-	public static Optional<CompoundNBT> getCompound(CompoundNBT tag, String key) {
-		return getTagValue(tag, key, CompoundNBT::getCompound);
+	public static Optional<NBTTagCompound> getCompound(NBTTagCompound tag, String key) {
+		return getTagValue(tag, key, NBTTagCompound::getCompoundTag);
 	}
 
-	private static <T> Optional<T> getTagValue(CompoundNBT tag, String key, BiFunction<CompoundNBT, String, T> getValue) {
-		if (!tag.contains(key)) {
+	private static <T> Optional<T> getTagValue(NBTTagCompound tag, String key, BiFunction<NBTTagCompound, String, T> getValue) {
+		if (!tag.hasKey(key)) {
 			return Optional.empty();
 		}
 
 		return Optional.of(getValue.apply(tag, key));
 	}
 
-	public static <E, C extends Collection<E>> Optional<C> getCollection(ItemStack stack, String parentKey, String tagName, int listType, Function<INBT, Optional<E>> getElement, Supplier<C> initCollection) {
-		return getTagValue(stack, parentKey, tagName, (c,n) -> c.getList(n, listType)).map(listNbt -> {
+	public static <E, C extends Collection<E>> Optional<C> getCollection(ItemStack stack, String parentKey, String tagName, int listType, Function<NBTBase, Optional<E>> getElement, Supplier<C> initCollection) {
+		return getTagValue(stack, parentKey, tagName, (c,n) -> c.getTagList(n, listType)).map(listNbt -> {
 			C ret = initCollection.get();
 			listNbt.forEach(elementNbt -> getElement.apply(elementNbt).ifPresent(ret::add));
 			return ret;
 		});
 	}
 
-	public static Optional<CompoundNBT> getCompound(ItemStack stack, String parentKey, String tagName) {
-		return getTagValue(stack, parentKey, tagName, CompoundNBT::getCompound);
+	public static Optional<NBTTagCompound> getCompound(ItemStack stack, String parentKey, String tagName) {
+		return getTagValue(stack, parentKey, tagName, NBTTagCompound::getCompoundTag);
 	}
 
-	public static Optional<CompoundNBT> getCompound(ItemStack stack, String tagName) {
-		return getTagValue(stack, tagName, CompoundNBT::getCompound);
+	public static Optional<NBTTagCompound> getCompound(ItemStack stack, String tagName) {
+		return getTagValue(stack, tagName, NBTTagCompound::getCompoundTag);
 	}
 
 	public static <T extends Enum<T>> Optional<T> getEnumConstant(ItemStack stack, String parentKey, String key, Function<String, T> deserialize) {
@@ -91,27 +94,33 @@ public class NBTHelper {
 	}
 
 	public static Optional<Boolean> getBoolean(ItemStack stack, String parentKey, String key) {
-		return getTagValue(stack, parentKey, key, CompoundNBT::getBoolean);
+		return getTagValue(stack, parentKey, key, NBTTagCompound::getBoolean);
 	}
 
 	public static Optional<Boolean> getBoolean(ItemStack stack, String key) {
-		return getTagValue(stack, key, CompoundNBT::getBoolean);
+		return getTagValue(stack, key, NBTTagCompound::getBoolean);
 	}
 
 	public static Optional<Long> getLong(ItemStack stack, String key) {
-		return getTagValue(stack, key, CompoundNBT::getLong);
+		return getTagValue(stack, key, NBTTagCompound::getLong);
 	}
 
 	public static Optional<UUID> getUniqueId(ItemStack stack, String key) {
 		//noinspection ConstantConditions - contains check is run before this get so it won't be null
-		return getTagValue(stack, key, (compound, k) -> NBTUtil.loadUUID(compound.get(k)));
+        NBTTagCompound stackTag = stack.getTagCompound();
+        if (stackTag != null && stackTag.hasKey(key + "Most", Constants.NBT.TAG_LONG) && stackTag.hasKey(key + "Least", Constants.NBT.TAG_LONG)) {
+            long most = stackTag.getLong(key + "Most");
+            long least = stackTag.getLong(key + "Least");
+            return Optional.of(new UUID(most, least));
+        }
+        return Optional.empty();
+    }
+
+	public static void setNBTTagCompound(ItemStack stack, String key, NBTTagCompound tag) {
+		setNBTTagCompound(stack, "", key, tag);
 	}
 
-	public static void setCompoundNBT(ItemStack stack, String key, CompoundNBT tag) {
-		setCompoundNBT(stack, "", key, tag);
-	}
-
-	public static void setCompoundNBT(ItemStack stack, String parentKey, String key, CompoundNBT tag) {
+	public static void setNBTTagCompound(ItemStack stack, String parentKey, String key, NBTTagCompound tag) {
 		if (parentKey.isEmpty()) {
 			stack.getOrCreateTag().put(key, tag);
 			return;
@@ -143,23 +152,23 @@ public class NBTHelper {
 		putEnumConstant(stack.getOrCreateTag(), key, enumConstant);
 	}
 
-	public static CompoundNBT putBoolean(CompoundNBT tag, String key, boolean value) {
-		tag.putBoolean(key, value);
+	public static NBTTagCompound putBoolean(NBTTagCompound tag, String key, boolean value) {
+		tag.setBoolean(key, value);
 		return tag;
 	}
 
-	public static CompoundNBT putInt(CompoundNBT tag, String key, int value) {
-		tag.putInt(key, value);
+	public static NBTTagCompound putInt(NBTTagCompound tag, String key, int value) {
+		tag.setInteger(key, value);
 		return tag;
 	}
 
-	public static CompoundNBT putString(CompoundNBT tag, String key, String value) {
-		tag.putString(key, value);
+	public static NBTTagCompound putString(NBTTagCompound tag, String key, String value) {
+		tag.setString(key, value);
 		return tag;
 	}
 
-	public static <T extends Enum<T> & IStringSerializable> CompoundNBT putEnumConstant(CompoundNBT tag, String key, T enumConstant) {
-		tag.putString(key, enumConstant.getSerializedName());
+	public static <T extends Enum<T> & IStringSerializable> NBTTagCompound putEnumConstant(NBTTagCompound tag, String key, T enumConstant) {
+		tag.setString(key, enumConstant.getSerializedName());
 		return tag;
 	}
 
@@ -176,58 +185,58 @@ public class NBTHelper {
 	}
 
 	public static void removeTag(ItemStack stack, String key) {
-		if (stack.getTag() == null) {
+		if (stack.getTagCompound() == null) {
 			return;
 		}
-		stack.getTag().remove(key);
+		stack.getTagCompound().removeTag(key);
 	}
 
 	public static Optional<String> getString(ItemStack stack, String key) {
-		return getTagValue(stack, key, CompoundNBT::getString);
+		return getTagValue(stack, key, NBTTagCompound::getString);
 	}
 
 	public static Optional<Float> getFloat(ItemStack stack, String key) {
-		return getTagValue(stack, key, CompoundNBT::getFloat);
+		return getTagValue(stack, key, NBTTagCompound::getFloat);
 	}
 
-	public static <K, V> Optional<Map<K, V>> getMap(ItemStack stack, String key, Function<String, K> getKey, BiFunction<String, INBT, V> getValue) {
-		Optional<CompoundNBT> parentTag = getCompound(stack, key);
+	public static <K, V> Optional<Map<K, V>> getMap(ItemStack stack, String key, Function<String, K> getKey, BiFunction<String, NBTBase, V> getValue) {
+		Optional<NBTTagCompound> parentTag = getCompound(stack, key);
 
 		if (!parentTag.isPresent()) {
 			return Optional.empty();
 		}
-		CompoundNBT tag = parentTag.get();
+		NBTTagCompound tag = parentTag.get();
 		return getMap(tag, getKey, (k, v) -> Optional.of(getValue.apply(k, v)));
 	}
 
-	public static <K, V> Optional<Map<K, V>> getMap(CompoundNBT tag, Function<String, K> getKey, BiFunction<String, INBT, Optional<V>> getValue) {
+	public static <K, V> Optional<Map<K, V>> getMap(NBTTagCompound tag, Function<String, K> getKey, BiFunction<String, NBTBase, Optional<V>> getValue) {
 		Map<K, V> map = new HashMap<>();
 
 		for (String tagName : tag.getAllKeys()) {
-			getValue.apply(tagName, tag.get(tagName)).ifPresent(value -> map.put(getKey.apply(tagName), value));
+			getValue.apply(tagName, tag.getTag(tagName)).ifPresent(value -> map.put(getKey.apply(tagName), value));
 		}
 
 		return Optional.of(map);
 	}
 
-	public static <K, V> void putMap(CompoundNBT tag, String key, Map<K, V> map, Function<K, String> getStringKey, Function<V, INBT> getNbtValue) {
-		CompoundNBT mapNbt = new CompoundNBT();
+	public static <K, V> void putMap(NBTTagCompound tag, String key, Map<K, V> map, Function<K, String> getStringKey, Function<V, NBTBase> getNbtValue) {
+		NBTTagCompound mapNbt = new NBTTagCompound();
 		for (Map.Entry<K, V> entry : map.entrySet()) {
-			mapNbt.put(getStringKey.apply(entry.getKey()), getNbtValue.apply(entry.getValue()));
+			mapNbt.setTag(getStringKey.apply(entry.getKey()), getNbtValue.apply(entry.getValue()));
 		}
-		tag.put(key, mapNbt);
+		tag.setTag(key, mapNbt);
 	}
 
-	public static <K, V> void setMap(ItemStack stack, String key, Map<K, V> map, Function<K, String> getStringKey, Function<V, INBT> getNbtValue) {
-		CompoundNBT mapNbt = new CompoundNBT();
+	public static <K, V> void setMap(ItemStack stack, String key, Map<K, V> map, Function<K, String> getStringKey, Function<V, NBTBase> getNbtValue) {
+		NBTTagCompound mapNbt = new NBTTagCompound();
 		for (Map.Entry<K, V> entry : map.entrySet()) {
-			mapNbt.put(getStringKey.apply(entry.getKey()), getNbtValue.apply(entry.getValue()));
+			mapNbt.setTag(getStringKey.apply(entry.getKey()), getNbtValue.apply(entry.getValue()));
 		}
 		stack.getOrCreateTag().put(key, mapNbt);
 	}
 
-	public static <T> void setList(ItemStack stack, String parentKey, String key, Collection<T> values, Function<T, INBT> getNbtValue) {
-		ListNBT list = new ListNBT();
+	public static <T> void setList(ItemStack stack, String parentKey, String key, Collection<T> values, Function<T, NBTBase> getNbtValue) {
+		NBTTagList list = new NBTTagList();
 		values.forEach(v -> list.add(getNbtValue.apply(v)));
 		if (parentKey.isEmpty()) {
 			stack.getOrCreateTag().put(key, list);

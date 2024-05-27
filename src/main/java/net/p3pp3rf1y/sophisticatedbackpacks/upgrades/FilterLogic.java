@@ -1,11 +1,14 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades;
 
+import net.MUI2.future.ItemHandlerHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
+//import net.minecraft.nbt.CompoundNBT;
+//import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.items.ItemHandlerHelper;
+//import net.minecraftforge.items.ItemHandlerHelper;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.FilterItemStackHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.InventoryHelper;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.NBTHelper;
@@ -45,17 +48,17 @@ FilterLogic extends FilterLogicBase {
 				@Override
 				protected void onContentsChanged(int slot) {
 					super.onContentsChanged(slot);
-					NBTHelper.setCompoundNBT(upgrade, parentTagKey, "filters", serializeNBT());
+					NBTHelper.setNBTTagCompound(upgrade, parentTagKey, "filters", serializeNBT());
 					save();
 				}
 
 				@Override
-				public void deserializeNBT(CompoundNBT nbt) {
+				public void deserializeNBT(NBTTagCompound nbt) {
 					setSize(filterSlotCount);
-					ListNBT tagList = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
-					for (int i = 0; i < tagList.size(); i++) {
-						CompoundNBT itemTags = tagList.getCompound(i);
-						int slot = itemTags.getInt("Slot");
+					NBTTagList tagList = nbt.getTagList("Items", Constants.NBT.TAG_COMPOUND);
+					for (int i = 0; i < tagList.tagCount(); i++) {
+                        NBTTagCompound itemTags = tagList.getCompoundTagAt(i);
+						int slot = itemTags.getInteger("Slot");
 
 						if (slot >= 0 && slot < stacks.size()) {
 							ItemStack stack = ItemStack.of(itemTags);
@@ -67,7 +70,7 @@ FilterLogic extends FilterLogicBase {
 
 				@Override
 				public boolean isItemValid(int slot, ItemStack stack) {
-					return stack.isEmpty() || (doesNotContain(stack) && isItemValid.test(stack));
+					return stack == null || stack.stackSize <= 0 || (doesNotContain(stack) && isItemValid.test(stack));
 				}
 
 				private boolean doesNotContain(ItemStack stack) {

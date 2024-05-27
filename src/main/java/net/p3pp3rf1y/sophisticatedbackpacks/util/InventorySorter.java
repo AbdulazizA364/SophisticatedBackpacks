@@ -1,67 +1,86 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.util;
 
+import net.MUI2.future.IItemHandlerModifiable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.common.util.Constants;
+//import net.minecraftforge.items.IItemHandlerModifiable;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class InventorySorter {
 	private InventorySorter() {}
 
-	public static final Comparator<Map.Entry<ItemStackKey, Integer>> BY_NAME = Comparator.comparing(o -> getRegistryName(o.getKey()));
+	public static final Comparator<Map.Entry<ItemStackKey, Integer>> BY_NAME = Comparator.comparing(o -> getUnlocalizedName(o.getKey()));
 
 	public static final Comparator<Map.Entry<ItemStackKey, Integer>> BY_COUNT = (first, second) -> {
 		int ret = second.getValue().compareTo(first.getValue());
-		return ret != 0 ? ret : getRegistryName(first.getKey()).compareTo(getRegistryName(second.getKey()));
+		return ret != 0 ? ret : getUnlocalizedName(first.getKey()).compareTo(getUnlocalizedName(second.getKey()));
 	};
 
 	public static final Comparator<Map.Entry<ItemStackKey, Integer>> BY_TAGS = new Comparator<Map.Entry<ItemStackKey, Integer>>() {
 		@Override
-		public int compare(Map.Entry<ItemStackKey, Integer> first, Map.Entry<ItemStackKey, Integer> second) {
-			Item firstItem = first.getKey().getStack().getItem();
-			Item secondItem = second.getKey().getStack().getItem();
-			if (firstItem == secondItem) {
-				return 0;
-			}
-			int ret = compareTags(firstItem.getTags(), secondItem.getTags());
-			return ret != 0 ? ret : getRegistryName(first.getKey()).compareTo(getRegistryName(second.getKey()));
-		}
+        public int compare(Map.Entry<ItemStackKey, Integer> first, Map.Entry<ItemStackKey, Integer> second) {
+            ItemStack firstStack = first.getKey().getStack();
+            ItemStack secondStack = second.getKey().getStack();
+            Item firstItem = firstStack.getItem();
+            Item secondItem = secondStack.getItem();
 
-		private int compareTags(Set<ResourceLocation> firstTags, Set<ResourceLocation> secondTags) {
-			int ret = Integer.compare(secondTags.size(), firstTags.size());
-			if (ret != 0) {
-				return ret;
-			}
+            if (firstItem == secondItem) {
+                return 0;
+            }
 
-			if (firstTags.size() == 1) {
-				return firstTags.iterator().next().compareTo(secondTags.iterator().next());
-			}
+            Set<String> firstTags = getTagsFromItemStack(firstStack);
+            Set<String> secondTags = getTagsFromItemStack(secondStack);
+            int ret = compareTags(firstTags, secondTags);
 
-			ArrayList<ResourceLocation> firstTagsSorted = new ArrayList<>(firstTags);
-			ArrayList<ResourceLocation> secondTagsSorted = new ArrayList<>(secondTags);
-			firstTagsSorted.sort(Comparator.naturalOrder());
-			secondTagsSorted.sort(Comparator.naturalOrder());
+            return ret != 0 ? ret : getUnlocalizedName(first.getKey()).compareTo(getUnlocalizedName(second.getKey()));
+        }
 
-			for (int i = 0; i < firstTagsSorted.size(); i++) {
-				ret = firstTagsSorted.get(i).compareTo(secondTagsSorted.get(i));
-				if (ret != 0) {
-					return ret;
-				}
-			}
-			return 0;
-		}
-	};
+        private Set<String> getTagsFromItemStack(ItemStack stack) {
+            Set<String> tags = new HashSet<>();
 
-	private static String getRegistryName(ItemStackKey itemStackKey) {
+            if (stack.hasTagCompound() && stack.getTagCompound().hasKey("tags")) {
+                NBTTagList tagList = stack.getTagCompound().getTagList("tags", Constants.NBT.TAG_STRING);
+                for (int i = 0; i < tagList.tagCount(); i++) {
+                    tags.add(tagList.getStringTagAt(i));
+                }
+            }
+
+            return tags;
+        }
+
+        private int compareTags(Set<String> firstTags, Set<String> secondTags) {
+            int ret = Integer.compare(secondTags.size(), firstTags.size());
+            if (ret != 0) {
+                return ret;
+            }
+
+            if (firstTags.size() == 1) {
+                return firstTags.iterator().next().compareTo(secondTags.iterator().next());
+            }
+
+            ArrayList<String> firstTagsSorted = new ArrayList<>(firstTags);
+            ArrayList<String> secondTagsSorted = new ArrayList<>(secondTags);
+            firstTagsSorted.sort(Comparator.naturalOrder());
+            secondTagsSorted.sort(Comparator.naturalOrder());
+
+            for (int i = 0; i < firstTagsSorted.size(); i++) {
+                ret = firstTagsSorted.get(i).compareTo(secondTagsSorted.get(i));
+                if (ret != 0) {
+                    return ret;
+                }
+            }
+
+            return 0;
+        }
+    };
+
+	private static String getUnlocalizedName(ItemStackKey itemStackKey) {
 		//noinspection ConstantConditions - registryName is nonNull by the time it exists in itemstack form
-		return itemStackKey.getStack().getItem().getRegistryName().toString();
+		return itemStackKey.getStack().getItem().getUnlocalizedName().toString();
 	}
 
 	public static void sortHandler(IItemHandlerModifiable handler, Comparator<? super Map.Entry<ItemStackKey, Integer>> comparator, Set<Integer> noSortSlots) {
@@ -91,8 +110,8 @@ public class InventorySorter {
 	}
 
 	private static void emptySlot(IItemHandlerModifiable handler, int slot) {
-		if (!handler.getStackInSlot(slot).isEmpty()) {
-			handler.setStackInSlot(slot, ItemStack.EMPTY);
+		if (handler.getStackInSlot(slot) != null) {
+			handler.setStackInSlot(slot, null);
 		}
 	}
 
@@ -105,8 +124,8 @@ public class InventorySorter {
 		} else {
 			countPlaced = Math.min(count, copy.getMaxStackSize());
 		}
-		copy.setCount(countPlaced);
-		if (!ItemStack.matches(handler.getStackInSlot(slot), copy)) {
+		copy.stackSize = (countPlaced);
+		if (!ItemStack.areItemStacksEqual(handler.getStackInSlot(slot), copy)) {
 			handler.setStackInSlot(slot, copy);
 		}
 		return countPlaced;

@@ -57,7 +57,7 @@ public interface ISlotTracker {
 		public ItemStack insertItemIntoHandler(BackpackInventoryHandler itemHandler, IItemHandlerInserter inserter, UnaryOperator<ItemStack> overflowHandler, ItemStack stack, boolean simulate) {
 			ItemStack remainingStack = stack.copy();
 			int slots = itemHandler.getSlots();
-			for (int slot = 0; slot < slots && !remainingStack.isEmpty(); slot++) {
+			for (int slot = 0; slot < slots && remainingStack != null; slot++) {
 				remainingStack = inserter.insertItem(slot, remainingStack, simulate);
 			}
 

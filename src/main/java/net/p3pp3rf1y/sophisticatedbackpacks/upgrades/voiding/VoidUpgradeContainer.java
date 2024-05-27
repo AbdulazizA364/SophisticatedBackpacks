@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.voiding;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.UpgradeContainerBase;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.UpgradeContainerType;
 import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.FilterLogic;
@@ -13,16 +13,16 @@ public class VoidUpgradeContainer extends UpgradeContainerBase<VoidUpgradeWrappe
 	private static final String DATA_SHOULD_VOID_OVERFLOW = "shouldVoidOverflow";
 	private final FilterLogicContainer<FilterLogic> filterLogicContainer;
 
-	public VoidUpgradeContainer(PlayerEntity player, int containerId, VoidUpgradeWrapper wrapper, UpgradeContainerType<VoidUpgradeWrapper, VoidUpgradeContainer> type) {
+	public VoidUpgradeContainer(EntityPlayer player, int containerId, VoidUpgradeWrapper wrapper, UpgradeContainerType<VoidUpgradeWrapper, VoidUpgradeContainer> type) {
 		super(player, containerId, wrapper, type);
 		filterLogicContainer = new FilterLogicContainer<>(upgradeWrapper::getFilterLogic, this, slots::add);
 	}
 
 	@Override
-	public void handleMessage(CompoundNBT data) {
-		if (data.contains(DATA_SHOULD_WORKD_IN_GUI)) {
+	public void handleMessage(NBTTagCompound data) {
+		if (data.hasKey (DATA_SHOULD_WORKD_IN_GUI)) {
 			setShouldWorkdInGUI(data.getBoolean(DATA_SHOULD_WORKD_IN_GUI));
-		} else if (data.contains(DATA_SHOULD_VOID_OVERFLOW)) {
+		} else if (data.hasKey (DATA_SHOULD_VOID_OVERFLOW)) {
 			setShouldVoidOverflow(data.getBoolean(DATA_SHOULD_VOID_OVERFLOW));
 		}
 		filterLogicContainer.handleMessage(data);
@@ -34,12 +34,12 @@ public class VoidUpgradeContainer extends UpgradeContainerBase<VoidUpgradeWrappe
 
 	public void setShouldWorkdInGUI(boolean shouldWorkdInGUI) {
 		upgradeWrapper.setShouldWorkdInGUI(shouldWorkdInGUI);
-		sendDataToServer(() -> NBTHelper.putBoolean(new CompoundNBT(), DATA_SHOULD_WORKD_IN_GUI, shouldWorkdInGUI));
+		sendDataToServer(() -> NBTHelper.putBoolean(new NBTTagCompound(), DATA_SHOULD_WORKD_IN_GUI, shouldWorkdInGUI));
 	}
 
 	public void setShouldVoidOverflow(boolean shouldVoidOverflow) {
 		upgradeWrapper.setShouldVoidOverflow(shouldVoidOverflow);
-		sendDataToServer(() -> NBTHelper.putBoolean(new CompoundNBT(), DATA_SHOULD_VOID_OVERFLOW, shouldVoidOverflow));
+		sendDataToServer(() -> NBTHelper.putBoolean(new NBTTagCompound(), DATA_SHOULD_VOID_OVERFLOW, shouldVoidOverflow));
 	}
 
 	public boolean shouldWorkInGUI() {

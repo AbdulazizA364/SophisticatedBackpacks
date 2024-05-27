@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.settings.backpack;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTTagCompound;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackSettingsManager;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.ISettingsCategory;
 
@@ -9,10 +9,10 @@ import java.util.function.Consumer;
 
 public class BackpackSettingsCategory implements ISettingsCategory {
 	public static final String NAME = "backpack";
-	private CompoundNBT categoryNbt;
-	private final Consumer<CompoundNBT> saveNbt;
+	private NBTTagCompound categoryNbt;
+	private final Consumer<NBTTagCompound> saveNbt;
 
-	public BackpackSettingsCategory(CompoundNBT categoryNbt, Consumer<CompoundNBT> saveNbt) {
+	public BackpackSettingsCategory(NBTTagCompound categoryNbt, Consumer<NBTTagCompound> saveNbt) {
 		this.categoryNbt = categoryNbt;
 		this.saveNbt = saveNbt;
 	}
@@ -32,7 +32,7 @@ public class BackpackSettingsCategory implements ISettingsCategory {
 	}
 
 	@Override
-	public void reloadFrom(CompoundNBT categoryNbt) {
+	public void reloadFrom(NBTTagCompound categoryNbt) {
 		this.categoryNbt = categoryNbt;
 	}
 }

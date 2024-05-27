@@ -1,10 +1,11 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.settings.nosort;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.util.text.ITextProperties;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+//import net.minecraft.inventory.container.Slot;
+//import net.minecraft.util.text.ITextProperties;
+//import net.minecraft.util.text.TextFormatting;
+//import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.inventory.Slot;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SettingsScreen;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.controls.Button;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.controls.ButtonDefinition;

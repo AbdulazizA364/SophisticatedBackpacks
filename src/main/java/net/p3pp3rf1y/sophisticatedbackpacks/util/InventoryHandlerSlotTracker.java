@@ -1,8 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.util;
 
+import net.MUI2.future.ItemHandlerHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
+//import net.minecraftforge.items.ItemHandlerHelper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackInventoryHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.memory.MemorySettingsCategory;
 
@@ -80,7 +81,7 @@ public class InventoryHandlerSlotTracker implements ISlotTracker {
 	}
 
 	private void set(BackpackInventoryHandler inventoryHandler, int slot, ItemStack stack) {
-		if (stack.isEmpty()) {
+		if (stack == null || stack.stackSize <= 0) {
 			emptySlots.add(slot);
 		} else {
 			if (isPartiallyFilled(inventoryHandler, slot, stack)) {
@@ -112,18 +113,18 @@ public class InventoryHandlerSlotTracker implements ISlotTracker {
 	}
 
 	private boolean isPartiallyFilled(BackpackInventoryHandler itemHandler, int slot, ItemStack stack) {
-		return stack.getCount() < itemHandler.getStackLimit(slot, stack);
+		return stack.stackSize < itemHandler.getStackLimit(slot, stack);
 	}
 
 	@Override
 	public ItemStack insertItemIntoHandler(BackpackInventoryHandler itemHandler, IItemHandlerInserter inserter, UnaryOperator<ItemStack> overflowHandler, ItemStack stack, boolean simulate) {
 		ItemStackKey stackKey = new ItemStackKey(stack);
 		ItemStack remainingStack = handleOverflow(overflowHandler, stackKey, stack);
-		if (remainingStack.isEmpty()) {
+		if (remainingStack == null || remainingStack.stackSize <= 0) {
 			return remainingStack;
 		}
 		remainingStack = insertIntoSlotsThatMatchStack(inserter, remainingStack, simulate, stackKey);
-		if (!remainingStack.isEmpty()) {
+		if (remainingStack != null) {
 			remainingStack = insertIntoEmptySlots(inserter, remainingStack, simulate);
 		}
 		return remainingStack;
@@ -134,21 +135,21 @@ public class InventoryHandlerSlotTracker implements ISlotTracker {
 		ItemStackKey stackKey = new ItemStackKey(stack);
 		ItemStack remainingStack = stack;
 		remainingStack = handleOverflow(overflowHandler, stackKey, remainingStack);
-		if (remainingStack.isEmpty()) {
+		if (remainingStack == null || remainingStack.stackSize <= 0) {
 			return remainingStack;
 		}
 
 		ItemStack existing = itemHandler.getStackInSlot(slot);
-		boolean wasEmpty = existing.isEmpty();
+		boolean wasEmpty = existing == null || existing.stackSize <= 0;
 
 		boolean doesNotMatchCurrentSlot = !ItemHandlerHelper.canItemStacksStack(stack, existing);
 		if (wasEmpty || doesNotMatchCurrentSlot) {
 			remainingStack = insertIntoSlotsThatMatchStack(inserter, remainingStack, simulate, stackKey);
 		}
-		if (!remainingStack.isEmpty() && doesNotMatchCurrentSlot) {
+		if (remainingStack != null && doesNotMatchCurrentSlot) {
 			remainingStack = insertIntoEmptySlots(inserter, remainingStack, simulate);
 		}
-		if (!remainingStack.isEmpty()) {
+		if (remainingStack != null) {
 			remainingStack = inserter.insertItem(slot, remainingStack, simulate);
 		}
 
@@ -173,7 +174,7 @@ public class InventoryHandlerSlotTracker implements ISlotTracker {
 		while (partiallyFilledStackSlots.get(stackKey) != null && !partiallyFilledStackSlots.get(stackKey).isEmpty() && i++ < sizeBefore) {
 			int matchingSlot = partiallyFilledStackSlots.get(stackKey).iterator().next();
 			remainingStack = inserter.insertItem(matchingSlot, remainingStack, simulate);
-			if (remainingStack.isEmpty()) {
+			if (remainingStack == null || remainingStack.stackSize <= 0) {
 				break;
 			}
 		}
@@ -183,7 +184,7 @@ public class InventoryHandlerSlotTracker implements ISlotTracker {
 	private ItemStack insertIntoEmptySlots(IItemHandlerInserter inserter, ItemStack stack, boolean simulate) {
 		ItemStack remainingStack = stack.copy();
 		remainingStack = insertIntoEmptyMemorySlots(inserter, simulate, remainingStack);
-		if (!remainingStack.isEmpty()) {
+		if (remainingStack != null) {
 			int sizeBefore = emptySlots.size();
 			int i = 0;
 			// Always taking first element here and iterating while not empty as iterating using iterator would produce CME due to void/compacting reacting to inserts
@@ -200,7 +201,7 @@ public class InventoryHandlerSlotTracker implements ISlotTracker {
 				}
 
 				remainingStack = inserter.insertItem(slot, remainingStack, simulate);
-				if (remainingStack.isEmpty()) {
+				if (remainingStack == null || remainingStack.stackSize <= 0) {
 					break;
 				}
 			}
@@ -217,7 +218,7 @@ public class InventoryHandlerSlotTracker implements ISlotTracker {
 			for (int memorySlot : memoryFilterItemSlots.get(item)) {
 				if (emptySlots.contains(memorySlot)) {
 					remainingStack = inserter.insertItem(memorySlot, remainingStack, simulate);
-					if (remainingStack.isEmpty()) {
+					if (remainingStack == null || remainingStack.stackSize <= 0) {
 						break;
 					}
 				}

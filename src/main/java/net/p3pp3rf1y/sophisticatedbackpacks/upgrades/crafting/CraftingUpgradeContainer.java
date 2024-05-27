@@ -3,13 +3,13 @@ package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.crafting;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.CraftResultInventory;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.CraftingResultSlot;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
@@ -103,7 +103,7 @@ public class CraftingUpgradeContainer extends UpgradeContainerBase<CraftingUpgra
 		updateCraftingResult(player.level, player, craftMatrix, craftResult, craftingResultSlot);
 	}
 
-	private void updateCraftingResult(World world, PlayerEntity player, CraftingInventory inventory, CraftResultInventory inventoryResult, CraftingResultSlot craftingResultSlot) {
+	private void updateCraftingResult(World world, PlayerEntity player, InventoryCrafting inventory, CraftResultInventory inventoryResult, CraftingResultSlot craftingResultSlot) {
 		if (!world.isClientSide) {
 			ServerPlayerEntity serverplayerentity = (ServerPlayerEntity) player;
 			ItemStack itemstack = ItemStack.EMPTY;
@@ -111,7 +111,7 @@ public class CraftingUpgradeContainer extends UpgradeContainerBase<CraftingUpgra
 				itemstack = lastRecipe.assemble(inventory);
 			} else {
 				//noinspection ConstantConditions - we're on server and for sure in the world so getServer can't return null here
-				Optional<ICraftingRecipe> optional = world.getServer().getRecipeManager().getRecipeFor(IRecipeType.CRAFTING, inventory, world);
+				Optional<ICraftingRecipe> optional = world.getServer().getRecipeManager().getRecipeFor(IRecipe.CRAFTING, inventory, world);
 				if (optional.isPresent()) {
 					ICraftingRecipe craftingRecipe = optional.get();
 					if (inventoryResult.setRecipeUsed(world, serverplayerentity, craftingRecipe)) {

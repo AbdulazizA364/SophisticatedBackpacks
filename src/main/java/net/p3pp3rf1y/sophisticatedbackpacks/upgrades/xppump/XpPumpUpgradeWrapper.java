@@ -1,16 +1,20 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.xppump;
 
+import com.gtnewhorizons.angelica.api.BlockPos;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
+//import net.minecraft.enchantment.Enchantments;
+//import net.minecraft.entity.LivingEntity;
+//import net.minecraft.entity.player.PlayerEntity;
+//import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+//import net.minecraft.util.math.AxisAlignedBB;
+//import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+//import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBackpackFluidHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBackpackWrapper;
@@ -35,21 +39,21 @@ public class XpPumpUpgradeWrapper extends UpgradeWrapperBase<XpPumpUpgradeWrappe
 	}
 
 	@Override
-	public void tick(@Nullable LivingEntity entity, World world, BlockPos pos) {
-		if ((entity != null && !(entity instanceof PlayerEntity)) || isInCooldown(world)) {
+	public void tick(@Nullable EntityLiving entity, World world, BlockPos pos) {
+		if ((entity != null && !(entity instanceof EntityPlayer)) || isInCooldown(world)) {
 			return;
 		}
 
 		if (entity == null) {
 			AxisAlignedBB searchBox = new AxisAlignedBB(pos).inflate(PLAYER_SEARCH_RANGE);
-			for (PlayerEntity player : world.players()) {
+			for (EntityPlayer player : world.players()) {
 				if (searchBox.contains(player.getX(), player.getY(), player.getZ())) {
 					interactWithPlayer(player);
 					mendItems(player);
 				}
 			}
 		} else {
-			PlayerEntity player = (PlayerEntity) entity;
+			EntityPlayer player = (EntityPlayer) entity;
 			interactWithPlayer(player);
 			mendItems(player);
 		}
@@ -57,7 +61,7 @@ public class XpPumpUpgradeWrapper extends UpgradeWrapperBase<XpPumpUpgradeWrappe
 		setCooldown(world, COOLDOWN);
 	}
 
-	private void mendItems(PlayerEntity player) {
+	private void mendItems(EntityPlayer player) {
 		if (Boolean.FALSE.equals(Config.COMMON.xpPumpUpgrade.mendingOn.get()) || !shouldMendItems()) {
 			return;
 		}
@@ -79,7 +83,7 @@ public class XpPumpUpgradeWrapper extends UpgradeWrapperBase<XpPumpUpgradeWrappe
 		}
 	}
 
-	private void interactWithPlayer(PlayerEntity player) {
+	private void interactWithPlayer(EntityPlayer player) {
 		backpackWrapper.getFluidHandler().ifPresent(fluidHandler -> {
 			int level = getLevel();
 			AutomationDirection direction = getDirection();
@@ -97,11 +101,11 @@ public class XpPumpUpgradeWrapper extends UpgradeWrapperBase<XpPumpUpgradeWrappe
 		});
 	}
 
-	private void tryGivePlayerExperienceFromTank(PlayerEntity player, IBackpackFluidHandler fluidHandler, int stopAtLevel) {
+	private void tryGivePlayerExperienceFromTank(EntityPlayer player, IBackpackFluidHandler fluidHandler, int stopAtLevel) {
 		tryGivePlayerExperienceFromTank(player, fluidHandler, stopAtLevel, true);
 	}
 
-	private void tryGivePlayerExperienceFromTank(PlayerEntity player, IBackpackFluidHandler fluidHandler, int stopAtLevel, boolean ignoreInOutLimit) {
+	private void tryGivePlayerExperienceFromTank(EntityPlayer player, IBackpackFluidHandler fluidHandler, int stopAtLevel, boolean ignoreInOutLimit) {
 		int maxXpPointsToGive = XpHelper.getExperienceForLevel(stopAtLevel) - XpHelper.getPlayerTotalExperience(player);
 		FluidStack drained = fluidHandler.drain(ModFluids.EXPERIENCE_TAG, XpHelper.experienceToLiquid(maxXpPointsToGive), IFluidHandler.FluidAction.EXECUTE, ignoreInOutLimit);
 
@@ -110,11 +114,11 @@ public class XpPumpUpgradeWrapper extends UpgradeWrapperBase<XpPumpUpgradeWrappe
 		}
 	}
 
-	private void tryFillTankWithPlayerExperience(PlayerEntity player, IBackpackFluidHandler fluidHandler, int stopAtLevel) {
+	private void tryFillTankWithPlayerExperience(EntityPlayer player, IBackpackFluidHandler fluidHandler, int stopAtLevel) {
 		tryFillTankWithPlayerExperience(player, fluidHandler, stopAtLevel, true);
 	}
 
-	private void tryFillTankWithPlayerExperience(PlayerEntity player, IBackpackFluidHandler fluidHandler, int stopAtLevel, boolean ignoreInOutLimit) {
+	private void tryFillTankWithPlayerExperience(EntityPlayer player, IBackpackFluidHandler fluidHandler, int stopAtLevel, boolean ignoreInOutLimit) {
 		int maxXpPointsToTake = XpHelper.getPlayerTotalExperience(player) - XpHelper.getExperienceForLevel(stopAtLevel);
 		int filled = fluidHandler.fill(ModFluids.EXPERIENCE_TAG, XpHelper.experienceToLiquid(maxXpPointsToTake), ModFluids.XP_STILL.get(), IFluidHandler.FluidAction.EXECUTE, ignoreInOutLimit);
 
@@ -123,19 +127,19 @@ public class XpPumpUpgradeWrapper extends UpgradeWrapperBase<XpPumpUpgradeWrappe
 		}
 	}
 
-	public void takeLevelsFromPlayer(PlayerEntity player) {
+	public void takeLevelsFromPlayer(EntityPlayer player) {
 		backpackWrapper.getFluidHandler().ifPresent(fluidHandler -> tryFillTankWithPlayerExperience(player, fluidHandler, Math.max(player.experienceLevel - getLevelsToStore(), 0)));
 	}
 
-	public void takeAllExperienceFromPlayer(PlayerEntity player) {
+	public void takeAllExperienceFromPlayer(EntityPlayer player) {
 		backpackWrapper.getFluidHandler().ifPresent(fluidHandler -> tryFillTankWithPlayerExperience(player, fluidHandler, 0));
 	}
 
-	public void giveLevelsToPlayer(PlayerEntity player) {
+	public void giveLevelsToPlayer(EntityPlayer player) {
 		backpackWrapper.getFluidHandler().ifPresent(fluidHandler -> tryGivePlayerExperienceFromTank(player, fluidHandler, player.experienceLevel + getLevelsToTake()));
 	}
 
-	public void giveAllExperienceToPlayer(PlayerEntity player) {
+	public void giveAllExperienceToPlayer(EntityPlayer player) {
 		backpackWrapper.getFluidHandler().ifPresent(fluidHandler -> tryGivePlayerExperienceFromTank(player, fluidHandler, ALL_LEVELS));
 	}
 

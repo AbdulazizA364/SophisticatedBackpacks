@@ -1,9 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.toolswapper;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.common.extensions.IForgeItemStack;
+//import net.minecraft.nbt.CompoundNBT;
+//import net.minecraftforge.common.ToolType;
+//import net.minecraftforge.common.extensions.IForgeItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.registry.tool.ToolRegistry;
 import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.FilterLogicBase;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.NBTHelper;

@@ -52,7 +52,7 @@ public class BackpackTileEntity extends TileEntity implements ITickableTileEntit
 	}
 
 	private void setBackpackFromNbt(CompoundNBT nbt) {
-		setBackpack(ItemStack.of(nbt.getCompound("backpackData")));
+		setBackpack(ItemStack.of(nbt.getCompoundTag("backpackData")));
 	}
 
 	@Override

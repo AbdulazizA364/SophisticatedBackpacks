@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.util;
 
+import net.MUI2.future.ItemStackHandler;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
 
 public class FilterItemStackHandler extends ItemStackHandler {
 	private boolean onlyEmptyFilters = true;
@@ -15,12 +15,12 @@ public class FilterItemStackHandler extends ItemStackHandler {
 
 	@Override
 	public ItemStack extractItem(int slot, int amount, boolean simulate) {
-		return ItemStack.EMPTY;
+		return null;
 	}
 
 	@Override
 	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-		return ItemStack.EMPTY;
+		return null;
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class FilterItemStackHandler extends ItemStackHandler {
 	}
 
 	private void updateEmptyFilters() {
-		onlyEmptyFilters = InventoryHelper.iterate(this, (s, filter) -> filter.isEmpty(), () -> true, result -> !result);
+		onlyEmptyFilters = InventoryHelper.iterate(this, (s, filter) -> (filter == null || filter.stackSize <= 0), () -> true, result -> !result);
 	}
 
 	public boolean hasOnlyEmptyFilters() {
